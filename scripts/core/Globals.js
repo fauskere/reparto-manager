@@ -15,6 +15,6 @@ if (typeof window.Actions === 'undefined') {
 
 // Configuración global de la aplicación
 window.AppConfig = {
-    version: 'v1.0.4', // Fix del Service Worker
+    version: 'v1.0.5', // Reversión a window.print para Epson Print Enabler
     name: 'Reparto Manager'
 };
