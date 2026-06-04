@@ -31,16 +31,26 @@ window.Actions.App_RegisterServiceWorker = function() {
 };
 
 window.Actions.App_ForceUpdate = function() {
+    // 1. Limpiar completamente el Cache Storage de la PWA
+    if ('caches' in window) {
+        caches.keys().then(function(names) {
+            for (let name of names) {
+                caches.delete(name);
+            }
+        });
+    }
+
+    // 2. Desregistrar el Service Worker y recargar
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
             for(let registration of registrations) {
                 registration.unregister();
             }
-            alert("Memoria limpiada. La app se reiniciará para aplicar los cambios.");
+            alert("Memoria limpiada profundamente. La app se reiniciará.");
             window.location.href = window.location.pathname + '?t=' + new Date().getTime();
         });
     } else {
-        window.location.reload(true);
+        window.location.href = window.location.pathname + '?t=' + new Date().getTime();
     }
 };
 
