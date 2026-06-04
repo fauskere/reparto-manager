@@ -15,6 +15,6 @@ if (typeof window.Actions === 'undefined') {
 
 // Configuración global de la aplicación
 window.AppConfig = {
-    version: 'v1.0.3', // Versión con sincronización de Firebase
+    version: 'v1.0.4', // Fix del Service Worker
     name: 'Reparto Manager'
 };
