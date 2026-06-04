@@ -49,8 +49,8 @@ window.Actions.Printer_ConnectAndPrint = async function(cart, total) {
             throw new Error("No se encontró canal de escritura en la impresora.");
         }
 
-        // 3. Enviar datos en pedazos (Chunks) seguros para BLE
-        const chunkSize = 256; 
+        // 3. Enviar datos en pedazos minúsculos (20 bytes es el límite estándar seguro en BLE)
+        const chunkSize = 20; 
         for (let i = 0; i < escposData.length; i += chunkSize) {
             const chunk = escposData.slice(i, i + chunkSize);
             if (printChar.properties.writeWithoutResponse) {
@@ -58,6 +58,8 @@ window.Actions.Printer_ConnectAndPrint = async function(cart, total) {
             } else {
                 await printChar.writeValue(chunk);
             }
+            // Pausa obligatoria para no ahogar el buffer de la impresora
+            await new Promise(resolve => setTimeout(resolve, 20));
         }
 
         device.gatt.disconnect();
@@ -68,6 +70,6 @@ window.Actions.Printer_ConnectAndPrint = async function(cart, total) {
         
     } catch (error) {
         console.error("Error BLE directo:", error);
-        alert("Ocurrió un error en la impresión directa: " + error.message);
+        alert("Error de conexión BLE: " + error.message);
     }
 };

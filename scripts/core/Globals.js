@@ -15,6 +15,6 @@ if (typeof window.Actions === 'undefined') {
 
 // Configuración global de la aplicación
 window.AppConfig = {
-    version: 'v1.0.7', // Conexión BLE Nativa Web Bluetooth
+    version: 'v1.0.8', // Parche de tamaño de chunks BLE
     name: 'Reparto Manager'
 };
