@@ -1,0 +1,106 @@
+/* Variables y Tema (Premium Dark Mode por defecto) */
+:root {
+    --bg-primary: #0F172A; /* Slate 900 */
+    --bg-secondary: #1E293B; /* Slate 800 */
+    --bg-glass: rgba(30, 41, 59, 0.7);
+    --text-primary: #F8FAFC; /* Slate 50 */
+    --text-secondary: #94A3B8; /* Slate 400 */
+    --accent: #3B82F6; /* Blue 500 */
+    --accent-hover: #60A5FA; /* Blue 400 */
+    --success: #10B981; /* Emerald 500 */
+    --danger: #EF4444; /* Red 500 */
+    --border-color: rgba(255, 255, 255, 0.1);
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    
+    --font-main: 'Inter', sans-serif;
+}
+
+/* Reset y Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-main);
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#app {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Tipografía */
+h1, h2, h3, h4 {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Utilidades Glassmorphism */
+.glass-panel {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-glass);
+}
+
+/* Layouts Responsive (Mobile First, then Tablet, then PC) */
+.layout-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: 100%;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.version-badge {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: var(--accent-hover);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Media Queries para Tablet y PC */
+@media (min-width: 768px) {
+    .layout-container {
+        grid-template-columns: 2fr 1fr; /* Catálogo | Carrito */
+        padding: 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .layout-container {
+        grid-template-columns: 3fr 1fr; /* Más espacio al catálogo en PC */
+    }
+}

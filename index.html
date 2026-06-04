@@ -1,63 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Costos Pro</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Reparto Manager</title>
+    <meta name="description" content="Punto de venta y gestión de repartos.">
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0F172A">
+    <link rel="stylesheet" href="styles/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="app-container">
-        <header>
-            <h1>Costos Pro</h1>
-        </header>
+    <div id="app"></div>
 
-        <main id="dashboard">
-            <section class="summary-card">
-                <div class="card-label" id="summary-label">Total Productos</div>
-                <div class="card-value" id="summary-value">0</div>
-            </section>
-
-            <section class="list-container">
-                <h2>Recientes</h2>
-                <div id="costs-list" class="costs-list">
-                    <!-- Los items se cargarán dinámicamente -->
-                    <div class="empty-state">No hay costos registrados</div>
-                </div>
-            </section>
-        </main>
-
-        <nav class="bottom-nav">
-            <button class="nav-item active">Dashboard</button>
-            <button class="nav-item">Ingredientes</button>
-            <button class="nav-item">Ajustes</button>
-        </nav>
-
-        <!-- Modal de ingreso -->
-        <div id="cost-modal" class="modal">
-            <div class="modal-content">
-                <h3>Nuevo Costo</h3>
-                <div class="form-group">
-                    <input type="text" id="cost-description" placeholder="Descripción (ej. Harina)">
-                </div>
-                <div class="form-group">
-                    <input type="number" id="cost-amount-input" placeholder="Monto ($)">
-                </div>
-                <button id="save-cost-btn" class="primary-btn">Guardar</button>
-                <button id="cancel-modal" class="nav-item"
-                    style="width:100%; margin-top:15px; font-size:14px">Cancelar</button>
-            </div>
-        </div>
-    </div>
-    <script src="app.js"></script>
+    <!-- Módulos Core -->
+    <script src="scripts/core/Globals.js"></script>
+    <script src="scripts/core/App.js"></script>
+    
+    <!-- Módulos Views -->
+    <script src="scripts/views/View_Config.js"></script>
+    <script src="scripts/views/View_Inventory.js"></script>
+    <script src="scripts/views/View_POS.js"></script>
+    
+    <!-- Módulos Actions -->
+    <script src="scripts/actions/Action_Inventory.js"></script>
+    <script src="scripts/actions/Action_POS.js"></script>
+    
+    <!-- Script Principal -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.Actions && window.Actions.App_Init) {
+                window.Actions.App_Init();
+            }
+        });
+    </script>
 </body>
-
 </html>
