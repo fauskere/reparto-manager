@@ -15,6 +15,6 @@ if (typeof window.Actions === 'undefined') {
 
 // Configuración global de la aplicación
 window.AppConfig = {
-    version: 'v1.0.6', // Integración final con RawBT
+    version: 'v1.0.7', // Conexión BLE Nativa Web Bluetooth
     name: 'Reparto Manager'
 };
