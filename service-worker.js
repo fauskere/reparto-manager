@@ -1,4 +1,4 @@
-const CACHE_NAME = 'reparto-manager-v1.0.2';
+const CACHE_NAME = 'reparto-manager-v1.0.3';
 const ASSETS = [
     './',
     './index.html',
@@ -12,7 +12,8 @@ const ASSETS = [
     './scripts/actions/Action_Inventory.js',
     './scripts/actions/Action_POS.js',
     './scripts/actions/Action_Printer.js',
-    './scripts/utils/ESCPOS.js'
+    './scripts/utils/ESCPOS.js',
+    './scripts/core/Firebase.js'
 ];
 
 self.addEventListener('install', event => {

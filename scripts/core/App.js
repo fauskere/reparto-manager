@@ -10,6 +10,17 @@ window.Actions.App_State = {
 window.Actions.App_Init = function() {
     console.log(`Iniciando ${window.AppConfig.name} ${window.AppConfig.version}`);
     window.Actions.App_RegisterServiceWorker();
+    
+    // Iniciar escucha del inventario en la nube
+    window.Actions.Inventory_Listen(() => {
+        // Refrescar vistas automáticamente si cambian los datos remotos
+        if (window.Actions.App_State.currentTab === 'inventory') {
+            if (typeof window.UI.Inventory_RenderList === 'function') window.UI.Inventory_RenderList();
+        } else if (window.Actions.App_State.currentTab === 'pos') {
+            if (typeof window.UI.POS_RenderCatalog === 'function') window.UI.POS_RenderCatalog();
+        }
+    });
+
     window.UI.App_RenderShell();
 };
 
