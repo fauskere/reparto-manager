@@ -30,6 +30,20 @@ window.Actions.App_RegisterServiceWorker = function() {
     }
 };
 
+window.Actions.App_ForceUpdate = function() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+            }
+            alert("Memoria limpiada. La app se reiniciará para aplicar los cambios.");
+            window.location.href = window.location.pathname + '?t=' + new Date().getTime();
+        });
+    } else {
+        window.location.reload(true);
+    }
+};
+
 window.UI.App_RenderShell = function() {
     const appContainer = document.getElementById('app');
     
