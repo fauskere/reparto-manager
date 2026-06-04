@@ -10,7 +10,9 @@ const ASSETS = [
     './scripts/views/View_Inventory.js',
     './scripts/views/View_POS.js',
     './scripts/actions/Action_Inventory.js',
-    './scripts/actions/Action_POS.js'
+    './scripts/actions/Action_POS.js',
+    './scripts/actions/Action_Printer.js',
+    './scripts/utils/ESCPOS.js'
 ];
 
 self.addEventListener('install', event => {

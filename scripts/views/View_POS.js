@@ -79,7 +79,7 @@ window.UI.POS_RenderCart = function() {
                 <span style="font-size: 1.25rem; font-weight: 600; color: var(--text-secondary);">Total</span>
                 <span style="font-size: 1.75rem; font-weight: 800; color: var(--success);">$${total.toFixed(2)}</span>
             </div>
-            <button style="width: 100%; padding: 1.25rem; background: var(--success); color: white; border: none; border-radius: var(--radius-lg); font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">
+            <button onclick="window.Actions.Printer_ConnectAndPrint(window.Actions.POS_State.cart, window.Actions.POS_GetTotal())" style="width: 100%; padding: 1.25rem; background: var(--success); color: white; border: none; border-radius: var(--radius-lg); font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">
                 Cobrar e Imprimir Ticket
             </button>
             <button onclick="window.UI.POS_HandleClear()" style="width: 100%; padding: 0.75rem; margin-top: 0.75rem; background: transparent; color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.1)'" onmouseout="this.style.background='transparent'">
