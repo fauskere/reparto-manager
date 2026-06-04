@@ -15,6 +15,6 @@ if (typeof window.Actions === 'undefined') {
 
 // Configuración global de la aplicación
 window.AppConfig = {
-    version: 'v1.0.1', // Versión actualizada para limpiar caché
+    version: 'v1.0.2', // Versión con nueva lógica de impresión nativa
     name: 'Reparto Manager'
 };
