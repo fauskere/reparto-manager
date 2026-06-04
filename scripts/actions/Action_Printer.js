@@ -9,92 +9,29 @@ window.Actions.Printer_ConnectAndPrint = function(cart, total) {
         return;
     }
 
-    // Crear un iframe oculto para inyectar el diseño del ticket y mandarlo a imprimir
-    let iframe = document.getElementById('ticket-printer-frame');
-    if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.id = 'ticket-printer-frame';
-        iframe.style.position = 'absolute';
-        iframe.style.width = '0px';
-        iframe.style.height = '0px';
-        iframe.style.border = 'none';
-        document.body.appendChild(iframe);
-    }
-
-    // Construcción del HTML del ticket adaptado a 58mm
-    let ticketHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Imprimir Ticket</title>
-            <style>
-                @page { 
-                    margin: 0; 
-                    size: 58mm auto; /* Formato de rollo térmico */
-                }
-                body { 
-                    font-family: monospace; 
-                    font-size: 12px; 
-                    width: 58mm; /* Ajuste estricto al papel */
-                    padding: 5mm; 
-                    margin: 0; 
-                    color: black; 
-                    background: white; 
-                    box-sizing: border-box;
-                }
-                .center { text-align: center; }
-                .bold { font-weight: bold; }
-                .divider { border-bottom: 1px dashed black; margin: 8px 0; }
-                table { width: 100%; border-collapse: collapse; font-size: 11px; }
-                td { vertical-align: top; padding-bottom: 4px; }
-                .price { text-align: right; }
-            </style>
-        </head>
-        <body>
-            <div class="center bold" style="font-size: 16px; margin-bottom: 5px;">REPARTO MANAGER</div>
-            <div class="center">Comprobante de Venta</div>
-            <div class="divider"></div>
-            <div>Fecha: ${new Date().toLocaleString()}</div>
-            <div class="divider"></div>
-            <table>
-    `;
-
-    cart.forEach(item => {
-        ticketHTML += `
-            <tr>
-                <td style="padding-right: 4px;">${item.quantity}x ${item.name}</td>
-                <td class="price">$${(item.price * item.quantity).toFixed(2)}</td>
-            </tr>
-        `;
-    });
-
-    ticketHTML += `
-            </table>
-            <div class="divider"></div>
-            <table class="bold" style="font-size: 14px;">
-                <tr>
-                    <td>TOTAL:</td>
-                    <td class="price">$${total.toFixed(2)}</td>
-                </tr>
-            </table>
-            <div class="center" style="margin-top: 15px;">¡Gracias por su compra!</div>
-            <div style="height: 10mm;"></div> <!-- Margen inferior para corte -->
-        </body>
-        </html>
-    `;
-
-    const doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write(ticketHTML);
-    doc.close();
-
-    // Esperar medio segundo para asegurar que el navegador renderizó el HTML, y lanzar impresión
-    setTimeout(() => {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
+    try {
+        // 1. Generar comandos ESC/POS puros
+        const escposData = window.Actions.ESCPOS.buildTicket(cart, total);
         
-        // Limpiamos carrito tras enviar orden de impresión
+        // 2. Convertir a Base64
+        let binary = '';
+        for (let i = 0; i < escposData.byteLength; i++) {
+            binary += String.fromCharCode(escposData[i]);
+        }
+        const base64Data = window.btoa(binary);
+
+        // 3. Crear el intent de RawBT
+        const intentUrl = 'intent:' + base64Data + '#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;';
+
+        // 4. Disparar el intent. RawBT se abrirá, conectará, imprimirá y se cerrará en 1 segundo.
+        window.location.href = intentUrl;
+
+        // Limpiar el carrito después de mandar a imprimir
         window.Actions.POS_ClearCart();
         if(typeof window.UI.POS_RenderCart === 'function') window.UI.POS_RenderCart();
-    }, 500);
+        
+    } catch (error) {
+        console.error("Error al generar impresión RawBT:", error);
+        alert("Ocurrió un error al preparar la impresión.");
+    }
 };
