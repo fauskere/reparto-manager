@@ -15,6 +15,6 @@ if (typeof window.Actions === 'undefined') {
 
 // Configuración global de la aplicación
 window.AppConfig = {
-    version: 'v1.0.0', // Versión solicitada en la configuración
+    version: 'v1.0.1', // Versión actualizada para limpiar caché
     name: 'Reparto Manager'
 };
