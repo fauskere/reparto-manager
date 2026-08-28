@@ -93,6 +93,7 @@
   3. **Compilación e Instalación Directa**:
      - APK `v2.9.85` compilado e instalado con desinstalación previa limpia vía ADB USB en la Tablet (`HA25ZAFC` - `Success`).
      - Resguardo actualizado en el pendrive `I:\reparto-manager`.
+- **REGLA ABSOLUTA DE AISLAMIENTO DE PROYECTO V2**: El entorno de trabajo de la App V2 es **única y exclusivamente la carpeta `C:\Reparto-Manager-DEV`**. Queda estrictamente prohibido tocar, editar, compilar o modificar cualquier archivo de la carpeta principal de producción `C:\Reparto-Manager` (V1/Tablet).
 - **Regla Estricta de Versionado y Releases GitHub**: Cada avance de código debe subirse a GitHub (`git push`). Cada versión/hito completado debe publicar un Release en GitHub con los 3 binarios compados para descarga inmediata: Web, APK de Android y Executable de Windows (`.exe`), permitiendo retroceder de versión en 1 segundo si surge cualquier fallo.
 - **Acceso a Firebase en Múltiples PC**: El archivo `lib/firebase_options.dart` está guardado dentro del proyecto de Git. Al clonar el proyecto en cualquier PC, se descarga automáticamente y se conecta a Firebase sin pedir configuraciones adicionales.
 - **GitHub Sincronizado**: Repositorio `https://github.com/fauskere/reparto-manager.git` actualizado con éxito en la rama `master` (producción v2.9.85) y rama `v2-clean-architecture` (desarrollo V2 desde cero con especificación completa).
