@@ -1,3 +1,34 @@
+## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.3: Consolidación Forense de Entidades y Contratos de Repositorio IoC)
+- **Qué se hizo**:
+  1. **Consolidación Forense de Entidades (`lib/domain/entities/`)**:
+     - `ClientEntity`: Incorporados campos operativos de V1 (`nickname`, `city`, `isOpenContinuous`, `groupId`), manteniendo `customPrices` indexado por `variantKey` y saldo inmutable.
+     - `ZoneEntity`: Entidad inmutable para gestión de zonas y localidades (`cities`).
+     - `ClientGroupEntity`: Entidad inmutable para agrupamiento de sucursales y clientes en cadena.
+     - `PromotionEntity`: Entidad inmutable para combos y promociones comerciales con evaluación de elegibilidad de carrito (`isEligible`).
+     - `SaleItemEntity` y `ExchangeItemEntity`: Modularizados en archivo dedicado (`sale_item_entity.dart`), soportando cambios/devoluciones de mercadería y envases.
+     - `SaleEntity`: Actualizado con `exchanges`, `appliedPromos`, `previousBalance` y `remainingBalance`, validando que `totalDiscount <= subtotal`, `cashPaid + transferPaid <= total` e invariante contable.
+     - `PaymentEntity`: Soporte para cobro mixto desglosado (`cashPaid`, `transferPaid`) garantizando `amount == cashPaid + transferPaid` e importe positivo.
+     - `ProductEntity`, `ProductVariant` y `TruckLoadEntity`: Verificados y alineados con tolerancia a stock negativo para operación en calle.
+  2. **Contratos Abstractos de Repositorio IoC (`lib/domain/repositories/`)**:
+     - 9 interfaces abstractas puras con retornos `Future<Result<T, DomainFailure>>`, multi-tenancy estricto (`tenantId`) y paginación (`limit`, `offset`):
+       * `IClientRepository`: CRUD, búsqueda, reseteo de visitas por zona y actualización de precios especiales.
+       * `IZoneRepository`: Administración de zonas y ciudades.
+       * `IClientGroupRepository`: Gestión de cadenas y grupos de clientes.
+       * `IProductRepository`: Catálogo, categorías y búsqueda por código de barras.
+       * `IPromotionRepository`: Gestión de promociones activas.
+       * `ISaleRepository`: Consultas, anulaciones, métricas pre-agregadas (`getSalesSummary`) y rankings (`getTopProducts`, `getTopClients`).
+       * `IPaymentRepository`: Registro y anulación de cobranzas con numeración correlativa.
+       * `ITruckRepository`: Carga de camioneta y aplicación atómica de deltas de existencias.
+       * `ILedgerRepository`: Asientos individuales/en lote, total de deuda circulante (`getTotalOutstandingDebt`) y snapshots periódicos.
+  3. **Batería de Pruebas Unitarias**:
+     - `business_entities_test.dart` y `repository_contracts_test.dart` con Fakes en memoria verificando aislamiento de datos por tenant, paginación y manejo tipado de resultados.
+     - **23/23 tests aprobados (100% éxito)**.
+  4. **Verificación Estática**:
+     - `flutter analyze`: **0 issues found** (0 errores, 0 warnings).
+     - Límite de líneas verificado: todos los archivos < 300 líneas y funciones < 40 líneas.
+- **Problemas**: Ninguno.
+- **Pendientes**: Paso 2.4 de la Fase 2 (Casos de Uso del Dominio: RegistrarVenta, RegistrarCobro, SincronizarCarga, etc.).
+
 ## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.2: Entidades Inmutables del Negocio)
 - **Qué se hizo**:
   1. **Entidad Cliente (`lib/domain/entities/client_entity.dart`)**:

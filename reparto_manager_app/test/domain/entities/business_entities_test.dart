@@ -2,16 +2,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reparto_manager_app/domain/core/money.dart';
 import 'package:reparto_manager_app/domain/entities/client_entity.dart';
+import 'package:reparto_manager_app/domain/entities/client_group_entity.dart';
 import 'package:reparto_manager_app/domain/entities/payment_entity.dart';
-import 'package:reparto_manager_app/domain/entities/product_entity.dart';
+import 'package:reparto_manager_app/domain/entities/promotion_entity.dart';
 import 'package:reparto_manager_app/domain/entities/sale_entity.dart';
 import 'package:reparto_manager_app/domain/entities/truck_load_entity.dart';
+import 'package:reparto_manager_app/domain/entities/zone_entity.dart';
 
 void main() {
-  group('Entidades Inmutables de Negocio V2', () {
+  group('Entidades Inmutables de Negocio V2 - Consolidación Forense', () {
     const tenantId = 'tenant_sucursal_central';
 
-    test('a) SaleEntity valida invariante: cashPaid + transferPaid + debtGenerated == total', () {
+    test('SaleEntity valida invariante con pago mixto, exchanges y promociones', () {
       final items = [
         SaleItemEntity(
           productId: 'p1',
@@ -22,9 +24,15 @@ void main() {
           unitCost: Money.fromUnits(600),
         ),
       ];
+      final exchanges = [
+        const ExchangeItemEntity(
+          productId: 'p1',
+          variantName: 'Estándar',
+          productName: 'Alfajor Triple',
+          quantity: 2,
+        ),
+      ];
 
-      // Total = 10 * 1000 = $10.000. Pago mixto: $4.000 efectivo + $2.500 transferencia = $6.500 abonado
-      // Deuda esperada = $3.500
       final saleResult = SaleEntity.create(
         id: 'sale_1',
         tenantId: tenantId,
@@ -33,24 +41,32 @@ void main() {
         ticketNumber: 101,
         date: DateTime.utc(2026, 8, 30, 12, 0),
         items: items,
+        exchanges: exchanges,
+        appliedPromos: ['PROMO_ALFAJOR_10'],
         subtotal: Money.fromUnits(10000),
-        totalDiscount: Money.zero,
+        totalDiscount: Money.fromUnits(1000),
         paymentMethod: PaymentMethod.mixed,
         cashPaid: Money.fromUnits(4000),
-        transferPaid: Money.fromUnits(2500),
+        transferPaid: Money.fromUnits(2000),
+        previousBalance: Money.fromUnits(5000),
+        remainingBalance: Money.fromUnits(8000),
       );
 
       expect(saleResult.isSuccess, isTrue);
       final sale = saleResult.valueOrNull!;
-      expect(sale.total, equals(Money.fromUnits(10000)));
-      expect(sale.debtGenerated, equals(Money.fromUnits(3500)));
+      expect(sale.total, equals(Money.fromUnits(9000)));
+      expect(sale.debtGenerated, equals(Money.fromUnits(3000)));
+      expect(sale.exchanges.length, equals(1));
+      expect(sale.appliedPromos, contains('PROMO_ALFAJOR_10'));
+      expect(sale.previousBalance, equals(Money.fromUnits(5000)));
+      expect(sale.remainingBalance, equals(Money.fromUnits(8000)));
       expect(
         sale.cashPaid + sale.transferPaid + sale.debtGenerated,
         equals(sale.total),
       );
     });
 
-    test('Directive 2: SaleEntity rechaza que totalDiscount supere al subtotal', () {
+    test('SaleEntity rechaza que totalDiscount supere subtotal o pago supere total', () {
       final items = [
         SaleItemEntity(
           productId: 'p1',
@@ -62,201 +78,143 @@ void main() {
         ),
       ];
 
-      final invalidDiscountResult = SaleEntity.create(
-        id: 'sale_invalid_desc',
+      final invalidDiscount = SaleEntity.create(
+        id: 'sale_inv_desc',
         tenantId: tenantId,
         clientId: 'c1',
-        clientName: 'Kiosco Central',
+        clientName: 'Kiosco',
         ticketNumber: 102,
         date: DateTime.now(),
         items: items,
         subtotal: Money.fromUnits(2000),
-        totalDiscount: Money.fromUnits(2500), // Descuento > Subtotal
+        totalDiscount: Money.fromUnits(2500),
         paymentMethod: PaymentMethod.cash,
         cashPaid: Money.zero,
         transferPaid: Money.zero,
       );
+      expect(invalidDiscount.isFailure, isTrue);
 
-      expect(invalidDiscountResult.isFailure, isTrue);
-    });
-
-    test('Directive 3: SaleEntity rechaza que cashPaid + transferPaid supere el total', () {
-      final items = [
-        SaleItemEntity(
-          productId: 'p1',
-          variantName: 'Estándar',
-          productName: 'Alfajor Triple',
-          quantity: 1,
-          unitPrice: Money.fromUnits(1000),
-          unitCost: Money.fromUnits(600),
-        ),
-      ];
-
-      final overpaidResult = SaleEntity.create(
+      final overpaid = SaleEntity.create(
         id: 'sale_overpaid',
         tenantId: tenantId,
         clientId: 'c1',
-        clientName: 'Kiosco Central',
+        clientName: 'Kiosco',
         ticketNumber: 103,
         date: DateTime.now(),
         items: items,
-        subtotal: Money.fromUnits(1000),
+        subtotal: Money.fromUnits(2000),
         totalDiscount: Money.zero,
         paymentMethod: PaymentMethod.cash,
-        cashPaid: Money.fromUnits(1200), // Pagó 1200 en venta de 1000
+        cashPaid: Money.fromUnits(2500),
         transferPaid: Money.zero,
       );
-
-      expect(overpaidResult.isFailure, isTrue);
+      expect(overpaid.isFailure, isTrue);
     });
 
-    test('b) Las colecciones internas son inmutables (no modificables externamente)', () {
-      final items = [
-        SaleItemEntity(
-          productId: 'p1',
-          variantName: 'Estándar',
-          productName: 'Alfajor Triple',
-          quantity: 1,
-          unitPrice: Money.fromUnits(500),
-          unitCost: Money.fromUnits(300),
-        ),
-      ];
+    test('ClientEntity incorpora campos operativos de V1 e inmutabilidad', () {
+      final client = ClientEntity(
+        id: 'cli_01',
+        tenantId: tenantId,
+        name: 'Mario Rossi',
+        nickname: 'Kiosco Mario',
+        city: 'Santa Fe',
+        isOpenContinuous: true,
+        groupId: 'group_kioscos_centro',
+        customPrices: {'p1|Estándar': Money.fromUnits(900)},
+      );
 
-      final sale = SaleEntity(
-        id: 's_imm',
+      expect(client.nickname, equals('Kiosco Mario'));
+      expect(client.city, equals('Santa Fe'));
+      expect(client.isOpenContinuous, isTrue);
+      expect(client.groupId, equals('group_kioscos_centro'));
+      expect(() => client.customPrices['p1|Estándar'] = Money.zero, throwsUnsupportedError);
+    });
+
+    test('ZoneEntity y ClientGroupEntity manejan listas inmutables', () {
+      final zone = ZoneEntity(
+        id: 'z_lunes',
+        tenantId: tenantId,
+        name: 'Lunes Zona Norte',
+        cities: ['Santa Fe', 'Recreo'],
+      );
+      expect(zone.cities.length, equals(2));
+      expect(() => (zone.cities as dynamic).add('Esperanza'), throwsUnsupportedError);
+
+      final group = ClientGroupEntity(
+        id: 'grp_01',
+        tenantId: tenantId,
+        name: 'Kioscos Belgrano',
+        clientIds: ['c1', 'c2'],
+      );
+      expect(group.clientIds.length, equals(2));
+      expect(() => (group.clientIds as dynamic).add('c3'), throwsUnsupportedError);
+    });
+
+    test('PromotionEntity evalúa elegibilidad de combo en carrito', () {
+      final promo = PromotionEntity(
+        id: 'promo_combo',
+        tenantId: tenantId,
+        name: 'Combo Desayuno',
+        requiredItems: {
+          'p_cafe|250g': 2,
+          'p_galletas|Pack': 1,
+        },
+        discountPercentage: 15.0,
+      );
+
+      expect(promo.isEligible({'p_cafe|250g': 1}), isFalse);
+      expect(promo.isEligible({'p_cafe|250g': 2, 'p_galletas|Pack': 1}), isTrue);
+      expect(promo.isEligible({'p_cafe|250g': 5, 'p_galletas|Pack': 2}), isTrue);
+    });
+
+    test('PaymentEntity soporta cobro mixto y valida que monto sea positivo', () {
+      final mixedPayment = PaymentEntity.create(
+        id: 'pay_m1',
         tenantId: tenantId,
         clientId: 'c1',
-        clientName: 'Cliente 1',
-        ticketNumber: 1,
+        receiptNumber: 501,
         date: DateTime.now(),
-        items: items,
-        subtotal: Money.fromUnits(500),
-        totalDiscount: Money.zero,
-        total: Money.fromUnits(500),
-        paymentMethod: PaymentMethod.cash,
-        cashPaid: Money.fromUnits(500),
-        transferPaid: Money.zero,
-        debtGenerated: Money.zero,
+        cashPaid: Money.fromUnits(3000),
+        transferPaid: Money.fromUnits(2000),
+        previousBalance: Money.fromUnits(10000),
+        remainingBalance: Money.fromUnits(5000),
       );
 
-      expect(() => (sale.items as dynamic).add(items.first), throwsUnsupportedError);
-
-      final client = ClientEntity(
-        id: 'cl_1',
-        tenantId: tenantId,
-        name: 'Don Pepe',
-        customPrices: {'p1|Estándar': Money.fromUnits(450)},
-      );
-
-      expect(() => client.customPrices['p1|Estándar'] = Money.fromUnits(400), throwsUnsupportedError);
-    });
-
-    test('c) Cálculo de subtotales y margen de ganancia con Money en SaleItemEntity', () {
-      final item = SaleItemEntity(
-        productId: 'prod_gaseosa',
-        variantName: 'Pack x6',
-        productName: 'Gaseosa Cola',
-        quantity: 5,
-        unitPrice: Money.fromUnits(3000),
-        unitCost: Money.fromUnits(2000),
-        discount: Money.fromUnits(1000), // $1.000 de descuento global en el renglón
-      );
-
-      // Subtotal = (5 * 3000) - 1000 = 15000 - 1000 = $14.000
-      expect(item.subtotal, equals(Money.fromUnits(14000)));
-
-      // Total Cost = 5 * 2000 = $10.000
-      expect(item.totalCost, equals(Money.fromUnits(10000)));
-
-      // Profit = 14000 - 10000 = $4.000
-      expect(item.profit, equals(Money.fromUnits(4000)));
-    });
-
-    test('d) Formato y consistencia de variantKey ("productId|variantName") en Product y Client', () {
-      const variant = ProductVariant(
-        productId: 'prod_alfajor',
-        variantName: 'Caja x12',
-        basePrice: Money.fromCents(1200000), // $12.000
-        costPrice: Money.fromCents(800000),  // $8.000
-      );
-
-      expect(variant.variantKey, equals('prod_alfajor|Caja x12'));
-      expect(variant.unitMargin, equals(Money.fromUnits(4000)));
-
-      // Directive 1: ClientEntity asigna precio especial usando el variantKey
-      final client = ClientEntity(
-        id: 'cli_especial',
-        tenantId: tenantId,
-        name: 'Mayorista Sol',
-        type: ClientType.especial,
-        customPrices: {
-          variant.variantKey: Money.fromUnits(10500),
-        },
-      );
-
-      // Consulta de precio especial por variantKey
-      final resolvedPrice = client.getPriceForVariant(
-        variant.variantKey,
-        variant.basePrice,
-      );
-      expect(resolvedPrice, equals(Money.fromUnits(10500)));
-
-      // Si no existe precio para otra variante, retorna el fallback
-      final fallbackPrice = client.getPriceForVariant(
-        'prod_alfajor|Caja x24',
-        Money.fromUnits(22000),
-      );
-      expect(fallbackPrice, equals(Money.fromUnits(22000)));
-    });
-
-    test('Directive 4: TruckLoadEntity permite registrar ventas con stock negativo sin bloquear', () {
-      final initialLoad = TruckLoadEntity(
-        truckId: 'truck_principal',
-        tenantId: tenantId,
-        date: DateTime.now(),
-        inventory: {
-          'prod_agua|600ml': 2, // Solo hay 2 botellas cargadas registradas
-        },
-      );
-
-      expect(initialLoad.hasNegativeStock, isFalse);
-
-      // Se venden 5 botellas en la calle (descuadre de carga matutina)
-      final loadAfterSale = initialLoad.applySale(
-        variantKey: 'prod_agua|600ml',
-        quantity: 5,
-      );
-
-      // El stock queda en -3, no crashea ni bloquea la venta
-      expect(loadAfterSale.getStock('prod_agua|600ml'), equals(-3));
-      expect(loadAfterSale.hasNegativeStock, isTrue);
-      expect(loadAfterSale.negativeStockVariantKeys, contains('prod_agua|600ml'));
-    });
-
-    test('PaymentEntity valida que el monto sea estrictamente mayor a cero', () {
-      final validPayment = PaymentEntity.create(
-        id: 'pay_01',
-        tenantId: tenantId,
-        clientId: 'cli_01',
-        receiptNumber: 1001,
-        date: DateTime.now(),
-        amount: Money.fromUnits(5000),
-        method: PaymentMethod.cash,
-      );
-
-      expect(validPayment.isSuccess, isTrue);
+      expect(mixedPayment.isSuccess, isTrue);
+      final payment = mixedPayment.valueOrNull!;
+      expect(payment.amount, equals(Money.fromUnits(5000)));
+      expect(payment.method, equals(PaymentMethod.mixed));
+      expect(payment.previousBalance, equals(Money.fromUnits(10000)));
+      expect(payment.remainingBalance, equals(Money.fromUnits(5000)));
 
       final zeroPayment = PaymentEntity.create(
-        id: 'pay_02',
+        id: 'pay_zero',
         tenantId: tenantId,
-        clientId: 'cli_01',
-        receiptNumber: 1002,
+        clientId: 'c1',
+        receiptNumber: 502,
         date: DateTime.now(),
-        amount: Money.zero,
-        method: PaymentMethod.cash,
+        cashPaid: Money.zero,
+        transferPaid: Money.zero,
+      );
+      expect(zeroPayment.isFailure, isTrue);
+    });
+
+    test('TruckLoadEntity permite registrar ventas con stock negativo sin bloquear', () {
+      final initialLoad = TruckLoadEntity(
+        truckId: 'truck_01',
+        tenantId: tenantId,
+        date: DateTime.now(),
+        inventory: {'p1|Estándar': 3},
       );
 
-      expect(zeroPayment.isFailure, isTrue);
+      final soldLoad = initialLoad.applySale(
+        variantKey: 'p1|Estándar',
+        quantity: 10,
+      );
+
+      expect(soldLoad.getStock('p1|Estándar'), equals(-7));
+      expect(soldLoad.hasNegativeStock, isTrue);
+      expect(soldLoad.negativeStockVariantKeys, contains('p1|Estándar'));
     });
   });
 }

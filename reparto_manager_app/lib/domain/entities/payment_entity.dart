@@ -14,7 +14,11 @@ class PaymentEntity {
   final int receiptNumber;
   final DateTime date;
   final Money amount;
+  final Money cashPaid;
+  final Money transferPaid;
   final PaymentMethod method;
+  final Money? previousBalance;
+  final Money? remainingBalance;
   final String? transferReceiptNumber;
   final String? notes;
 
@@ -25,20 +29,26 @@ class PaymentEntity {
     required this.receiptNumber,
     required this.date,
     required this.amount,
+    required this.cashPaid,
+    required this.transferPaid,
     required this.method,
+    this.previousBalance,
+    this.remainingBalance,
     this.transferReceiptNumber,
     this.notes,
   });
 
-  /// Valida y construye un pago garantizando que el monto sea estrictamente positivo.
+  /// Valida y construye un pago soportando pagos simples o mixtos con invariante contable.
   static Result<PaymentEntity, DomainFailure> create({
     required String id,
     required String tenantId,
     required String clientId,
     required int receiptNumber,
     required DateTime date,
-    required Money amount,
-    required PaymentMethod method,
+    required Money cashPaid,
+    required Money transferPaid,
+    Money? previousBalance,
+    Money? remainingBalance,
     String? transferReceiptNumber,
     String? notes,
   }) {
@@ -50,21 +60,23 @@ class PaymentEntity {
       );
     }
 
-    if (!amount.isPositive) {
+    final totalAmount = cashPaid + transferPaid;
+    if (!totalAmount.isPositive) {
       return Result.fail(
         NegativeAmountNotAllowedFailure(
-          'El importe de un pago o cobranza debe ser estrictamente mayor a cero',
-          amount,
+          'El importe total de la cobranza debe ser estrictamente mayor a cero',
+          totalAmount,
         ),
       );
     }
 
-    if (method != PaymentMethod.cash && method != PaymentMethod.transfer) {
-      return Result.fail(
-        const EntityValidationFailure(
-          'El método de cobranza individual debe ser efectivo o transferencia',
-        ),
-      );
+    final PaymentMethod method;
+    if (cashPaid.isPositive && transferPaid.isPositive) {
+      method = PaymentMethod.mixed;
+    } else if (cashPaid.isPositive) {
+      method = PaymentMethod.cash;
+    } else {
+      method = PaymentMethod.transfer;
     }
 
     return Result.ok(
@@ -74,8 +86,12 @@ class PaymentEntity {
         clientId: clientId.trim(),
         receiptNumber: receiptNumber,
         date: date.toUtc(),
-        amount: amount,
+        amount: totalAmount,
+        cashPaid: cashPaid,
+        transferPaid: transferPaid,
         method: method,
+        previousBalance: previousBalance,
+        remainingBalance: remainingBalance,
         transferReceiptNumber: transferReceiptNumber?.trim(),
         notes: notes?.trim(),
       ),
@@ -89,7 +105,11 @@ class PaymentEntity {
     int? receiptNumber,
     DateTime? date,
     Money? amount,
+    Money? cashPaid,
+    Money? transferPaid,
     PaymentMethod? method,
+    Money? previousBalance,
+    Money? remainingBalance,
     String? transferReceiptNumber,
     String? notes,
   }) {
@@ -100,7 +120,11 @@ class PaymentEntity {
       receiptNumber: receiptNumber ?? this.receiptNumber,
       date: date ?? this.date,
       amount: amount ?? this.amount,
+      cashPaid: cashPaid ?? this.cashPaid,
+      transferPaid: transferPaid ?? this.transferPaid,
       method: method ?? this.method,
+      previousBalance: previousBalance ?? this.previousBalance,
+      remainingBalance: remainingBalance ?? this.remainingBalance,
       transferReceiptNumber: transferReceiptNumber ?? this.transferReceiptNumber,
       notes: notes ?? this.notes,
     );
@@ -117,6 +141,8 @@ class PaymentEntity {
           receiptNumber == other.receiptNumber &&
           date == other.date &&
           amount == other.amount &&
+          cashPaid == other.cashPaid &&
+          transferPaid == other.transferPaid &&
           method == other.method &&
           transferReceiptNumber == other.transferReceiptNumber &&
           notes == other.notes;
@@ -130,6 +156,8 @@ class PaymentEntity {
         receiptNumber,
         date,
         amount,
+        cashPaid,
+        transferPaid,
         method,
         transferReceiptNumber,
         notes,
@@ -137,5 +165,5 @@ class PaymentEntity {
 
   @override
   String toString() =>
-      'PaymentEntity(recibo #$receiptNumber, cliente: $clientId, monto: $amount)';
+      'PaymentEntity(#$receiptNumber, cliente: $clientId, monto: $amount)';
 }

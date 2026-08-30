@@ -191,3 +191,69 @@ Ejecución completa del Paso 2.2 incorporando las 4 correcciones arquitectónica
    - `flutter analyze`: **0 issues found**.
    - Todos los archivos respetan el límite estricto de `< 300 líneas` y funciones `< 40 líneas`.
 
+---
+
+### 👤 USUARIO:
+<USER_REQUEST>
+Hola. Tras una auditoría forense completa de las 14 colecciones de la base de datos de V1, vamos a consolidar de forma definitiva todas las Entidades del Negocio (Paso 2.2) y los Contratos de Repositorio (Paso 2.3) en C:\Reparto-Manager-DEV (rama v2-clean-architecture).
+
+Reglas estrictas: Dart puro (sin UI ni Firebase), inmutabilidad defensiva, multi-tenancy con tenantId, archivos < 300 líneas y funciones < 40 líneas.
+
+Tu misión es verificar, actualizar y crear lo siguiente:
+BLOQUE 1: CONSOLIDACIÓN DE ENTIDADES (lib/domain/entities/)
+1. Actualizar ClientEntity (nickname, city, isOpenContinuous, groupId)
+2. Crear ZoneEntity (cities)
+3. Crear ClientGroupEntity (clientIds)
+4. Crear PromotionEntity (requiredItems, discountPercentage, isEligible)
+5. Actualizar ProductEntity y ProductVariant
+6. Actualizar SaleEntity (ExchangeItemEntity, exchanges, appliedPromos, previousBalance, remainingBalance)
+7. Actualizar PaymentEntity (soporte de cobro mixto cashPaid + transferPaid == amount)
+8. TruckLoadEntity
+
+BLOQUE 2: CONTRATOS DE REPOSITORIO (lib/domain/repositories/)
+1. IClientRepository
+2. IZoneRepository
+3. IClientGroupRepository
+4. IProductRepository
+5. IPromotionRepository
+6. ISaleRepository
+7. IPaymentRepository
+8. ITruckRepository
+9. ILedgerRepository
+
+BLOQUE 3: TESTS, VERIFICACIÓN Y CIERRE
+</USER_REQUEST>
+
+---
+
+### 🤖 ASISTENTE:
+Ejecución completa y consolidación forense de Entidades y Repositorios:
+
+1. **Bloque 1: Entidades Consolidadas (`lib/domain/entities/`)**:
+   - `ClientEntity`: Incorporados `nickname`, `city`, `isOpenContinuous`, `groupId` manteniendo `customPrices` indexado por `variantKey`.
+   - `ZoneEntity`: Creada con lista inmutable `cities`.
+   - `ClientGroupEntity`: Creada con lista inmutable `clientIds`.
+   - `PromotionEntity`: Creada con `requiredItems` y método de evaluación de carrito `isEligible`.
+   - `SaleItemEntity` y `ExchangeItemEntity`: Modularizados en archivo dedicado `sale_item_entity.dart` para cambios y devoluciones.
+   - `SaleEntity`: Incorporados `exchanges`, `appliedPromos`, `previousBalance` y `remainingBalance` con validación de invariantes bancarios.
+   - `PaymentEntity`: Incorporado desglose mixto `cashPaid` y `transferPaid` (`amount == cashPaid + transferPaid > 0`).
+
+2. **Bloque 2: Contratos de Repositorio IoC (`lib/domain/repositories/`)**:
+   - 9 interfaces abstractas puras con `tenantId` estricto, paginación (`limit`, `offset`) y retornos `Future<Result<T, DomainFailure>>`:
+     * `IClientRepository`
+     * `IZoneRepository`
+     * `IClientGroupRepository`
+     * `IProductRepository`
+     * `IPromotionRepository`
+     * `ISaleRepository`
+     * `IPaymentRepository`
+     * `ITruckRepository`
+     * `ILedgerRepository`
+
+3. **Bloque 3: Tests Unitarios y Verificación**:
+   - Actualizado `business_entities_test.dart` y creado `repository_contracts_test.dart` con Fakes en memoria.
+   - `flutter test`: **23/23 tests aprobados (100% éxito)**.
+   - `flutter analyze`: **0 issues found** (0 errores, 0 warnings).
+   - Todos los archivos respetan el límite estricto de `< 300 líneas` y funciones `< 40 líneas`.
+
+
