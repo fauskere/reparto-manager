@@ -37,3 +37,8 @@ class NegativeAmountNotAllowedFailure extends DomainFailure {
 class BalanceCalculationFailure extends DomainFailure {
   const BalanceCalculationFailure(super.message, [super.details]);
 }
+
+/// Fallo cuando una entidad viola una regla o invariante de negocio.
+class EntityValidationFailure extends DomainFailure {
+  const EntityValidationFailure(super.message, [super.details]);
+}

@@ -117,3 +117,77 @@ Ejecución del Paso 2.1 cumpliendo estrictamente con todas las directivas:
 6. **Verificación Estática**:
    - `flutter analyze`: 0 issues found (0 errores, 0 warnings).
    - Límites de líneas: todos los archivos < 300 líneas y funciones < 40 líneas.
+
+---
+
+### 👤 USUARIO:
+<USER_REQUEST>
+Continuamos con la FASE 2: Capa de Dominio Puro en C:\Reparto-Manager-DEV (rama v2-clean-architecture).
+
+Ahora ejecutaremos el Paso 2.2: Entidades Inmutables del Negocio.
+Todas las entidades deben ser Dart puro (sin dependencias de UI ni Firebase), inmutables (con copyWith, == y hashCode), utilizando nuestro Value Object "Money" para todos los importes y asegurando el aislamiento multi-tenant con "tenantId".
+
+Límites estrictos: Archivos < 300 líneas, funciones < 40 líneas.
+
+Tu misión para este Paso 2.2 en lib/domain/entities/:
+1. Entidad Cliente (lib/domain/entities/client_entity.dart)
+2. Entidad Producto y Variantes (lib/domain/entities/product_entity.dart)
+3. Entidad Venta y Renglón de Venta (lib/domain/entities/sale_entity.dart)
+4. Entidad Cobranza/Pago (lib/domain/entities/payment_entity.dart)
+5. Entidad Camioneta y Stock Móvil (lib/domain/entities/truck_load_entity.dart)
+6. Batería de Tests Unitarios (test/domain/entities/business_entities_test.dart)
+7. Verificación y Cierre.
+</USER_REQUEST>
+
+---
+
+### 👤 USUARIO:
+<USER_REQUEST>
+Atención: Revisé el plan en profundidad y tenés 4 correcciones arquitectónicas obligatorias antes de programar:
+
+1. En ClientEntity, customPrices DEBE ser Map<String, Money> donde la clave sea el "variantKey" (formato "productId|variantName"), NO solo el productId. Los precios especiales se asignan por variante/tamaño, no por producto genérico.
+2. En SaleEntity, valida que totalDiscount jamás sea mayor a subtotal. El total de una venta nunca puede ser negativo.
+3. En SaleEntity, valida que (cashPaid + transferPaid) jamás supere el total. (El vuelto físico se entrega en mano; a la entidad solo ingresa el monto neto aplicado a la venta).
+4. En TruckLoadEntity, el stock de la camioneta debe permitir registrar ventas aunque el inventario quede en negativo (con advertencia), para NUNCA bloquear una venta real en la calle por descuadre de carga matutina.
+
+Ajustá el plan con estos 4 puntos y procedé con el Paso 2.2.
+</USER_REQUEST>
+
+---
+
+### 🤖 ASISTENTE:
+Ejecución completa del Paso 2.2 incorporando las 4 correcciones arquitectónicas:
+
+1. **ClientEntity (`lib/domain/entities/client_entity.dart`)**:
+   - `ClientType` (`normal`, `especial`, `revendedor`) y `VisitStatus` (`visited`, `notVisited`, `pending`).
+   - `customPrices`: `Map<String, Money>` inmutable usando `variantKey` (`productId|variantName`) como clave.
+   - `balance`, `debtLimit`, `isStore`, `isActive`.
+   - Método `getPriceForVariant(variantKey, fallbackBasePrice)`.
+
+2. **ProductEntity y ProductVariant (`lib/domain/entities/product_entity.dart`)**:
+   - `ProductVariant`: Inmutable con `variantName`, `variantKey` (`productId|variantName`), `basePrice`, `costPrice`, precios diferenciales, existencias y margen unitario.
+   - `ProductEntity`: Multi-tenant, catálogo por categorías, barcode, imagen y lista inmutable de variantes.
+
+3. **SaleEntity y SaleItemEntity (`lib/domain/entities/sale_entity.dart`)**:
+   - `PaymentMethod`: `cash`, `transfer`, `mixed`, `onAccount`.
+   - `SaleItemEntity`: Inmutable con cálculo exacto de `subtotal`, `totalCost` y `profit`.
+   - `SaleEntity`:
+     * Valida que `totalDiscount <= subtotal` (Directiva 2).
+     * Valida que `cashPaid + transferPaid <= total` (Directiva 3).
+     * Invariante matemático estricto: `cashPaid + transferPaid + debtGenerated == total`.
+
+4. **PaymentEntity (`lib/domain/entities/payment_entity.dart`)**:
+   - Cobranzas inmutables en efectivo o transferencia con comprobante y validación de monto positivo (`amount > 0`).
+
+5. **TruckLoadEntity (`lib/domain/entities/truck_load_entity.dart`)**:
+   - Control de existencias a bordo por `variantKey` y mermas en `damagedItems`.
+   - Tolerancia a saldos de stock negativos (`hasNegativeStock`, `negativeStockVariantKeys`) para permitir operar en la calle ante descuadres de carga matutina (Directiva 4).
+
+6. **Batería de Pruebas Unitarias (`test/domain/entities/business_entities_test.dart`)**:
+   - 8 tests exhaustivos demostrando invariantes, inmutabilidad, cálculo de márgenes, precios especiales por variante, stock negativo tolerado y validación de cobros.
+   - Suite total: **22/22 tests aprobados (100% éxito)**.
+
+7. **Verificación Estática y Métricas**:
+   - `flutter analyze`: **0 issues found**.
+   - Todos los archivos respetan el límite estricto de `< 300 líneas` y funciones `< 40 líneas`.
+

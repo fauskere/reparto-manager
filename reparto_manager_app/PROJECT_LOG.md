@@ -1,3 +1,34 @@
+## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.2: Entidades Inmutables del Negocio)
+- **Qué se hizo**:
+  1. **Entidad Cliente (`lib/domain/entities/client_entity.dart`)**:
+     - Enums `ClientType` (normal, especial, revendedor) y `VisitStatus` (visited, notVisited, pending).
+     - Clase inmutable `ClientEntity` con soporte multi-tenant (`tenantId`), saldo actual (`balance`), límite de crédito (`debtLimit`), indicador de comercio (`isStore`) y mapa unmodifiable `customPrices`.
+     - **Directiva 1 cumplida**: `customPrices` indexa por `variantKey` (`productId|variantName`) permitiendo asignaciones de precios específicos por tamaño/variante.
+  2. **Entidad Producto y Variantes (`lib/domain/entities/product_entity.dart`)**:
+     - `ProductVariant`: Inmutable con `variantName`, clave compuesta `variantKey` (`productId|variantName`), `basePrice`, `costPrice`, `specialPrice`, `resellerPrice`, existencias en depósito y alerta de stock mínimo.
+     - `ProductEntity`: Catálogo multi-tenant con categoría, código de barras, imagen y lista unmodifiable de variantes.
+  3. **Entidad Venta y Renglón (`lib/domain/entities/sale_entity.dart`)**:
+     - Enum `PaymentMethod` (cash, transfer, mixed, onAccount).
+     - `SaleItemEntity`: Inmutable con `quantity > 0`, precios, costos, descuento y cálculo exacto de `subtotal`, `totalCost` y `profit`.
+     - `SaleEntity`: Correlativo `ticketNumber`, desglose `cashPaid`, `transferPaid`, `debtGenerated`.
+     - **Directiva 2 cumplida**: Valida que `totalDiscount <= subtotal` (total nunca negativo).
+     - **Directiva 3 cumplida**: Valida que `cashPaid + transferPaid <= total` (el vuelto físico se entrega en mano y solo ingresa a la entidad el monto neto imputado).
+     - **Invariante contable estricto**: `cashPaid + transferPaid + debtGenerated == total`.
+  4. **Entidad Cobranza/Pago (`lib/domain/entities/payment_entity.dart`)**:
+     - `PaymentEntity`: Inmutable con `receiptNumber`, fecha UTC, método de cobro (efectivo o transferencia) y validación de monto positivo (`amount > 0`).
+  5. **Entidad Camioneta y Carga Móvil (`lib/domain/entities/truck_load_entity.dart`)**:
+     - `TruckLoadEntity`: Control de carga a bordo por `variantKey` y registro de roturas/mermas (`damagedItems`).
+     - **Directiva 4 cumplida**: Permite registrar ventas aún con stock negativo (`hasNegativeStock`), garantizando que jamás se bloquee una venta real en la calle por descuadre de carga matutina.
+  6. **Batería de Pruebas Unitarias (`test/domain/entities/business_entities_test.dart`)**:
+     - 8 nuevos tests cubriendo: invariante de venta, rechazo de sobrepago o sobredescuento, inmutabilidad de colecciones, cálculo de márgenes con Money, precios especiales por `variantKey`, stock negativo tolerado en camioneta y validación de cobros positivos.
+     - Total de tests de la suite: **22/22 tests aprobados (100% éxito)**.
+  7. **Verificación y Calidad**:
+     - `flutter test`: 22/22 tests aprobados.
+     - `flutter analyze`: 0 issues found (0 errores, 0 advertencias).
+     - Límites de código estrictos cumplidos: todos los archivos < 300 líneas y funciones < 40 líneas.
+- **Problemas**: Ninguno.
+- **Pendientes**: Paso 2.3 de la Fase 2 (Interfaces de Repositorios Abstractos y Casos de Uso del Dominio).
+
 ## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.1: Núcleo Matemático, Primitivas y Event Sourcing Contable)
 - **Qué se hizo**:
   1. **Value Object Dinero (`lib/domain/core/money.dart`)**:
