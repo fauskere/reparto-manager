@@ -2,6 +2,7 @@
 // Capa de Dominio Puro - Reparto-Manager V2
 
 import '../core/domain_failures.dart';
+import '../core/money.dart';
 import '../core/result.dart';
 import '../entities/client_group_entity.dart';
 
@@ -19,5 +20,26 @@ abstract class IClientGroupRepository {
   Future<Result<void, DomainFailure>> deleteClientGroup(
     String tenantId,
     String groupId,
+  );
+
+  /// Obtiene las facturas o cortes de cuenta emitidos para el grupo.
+  Future<Result<List<Map<String, dynamic>>, DomainFailure>> getGroupInvoices(
+    String tenantId,
+    String groupId,
+  );
+
+  /// Genera un corte o comprobante consolidado de facturación para el grupo.
+  Future<Result<void, DomainFailure>> createGroupInvoice(
+    String tenantId,
+    String groupId,
+    Money totalAmount,
+    List<String> saleIds,
+  );
+
+  /// Registra el pago total de un corte de facturación de grupo.
+  Future<Result<void, DomainFailure>> payGroupInvoice(
+    String tenantId,
+    String groupId,
+    String invoiceId,
   );
 }

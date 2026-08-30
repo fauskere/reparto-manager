@@ -2,11 +2,11 @@
 // Capa de Dominio Puro - Reparto-Manager V2
 
 import '../core/domain_failures.dart';
-import '../core/money.dart';
 import '../core/result.dart';
+import '../entities/cash_summary_entity.dart';
 import '../entities/sale_entity.dart';
 
-/// Contrato abstracto para la persistencia, consulta y métricas de ventas.
+/// Contrato abstracto para la persistencia, consulta y arqueos de ventas.
 abstract class ISaleRepository {
   /// Obtiene una venta por su ID.
   Future<Result<SaleEntity, DomainFailure>> getSaleById(
@@ -31,9 +31,8 @@ abstract class ISaleRepository {
     int offset = 0,
   });
 
-  /// Retorna un resumen consolidado pre-agregado de ventas en el período.
-  /// Mapa con totales: totalSales, cashTotal, transferTotal, debtTotal.
-  Future<Result<Map<String, Money>, DomainFailure>> getSalesSummary(
+  /// Arqueo de caja diario consolidado: físico en mano vs transferencias bancarias.
+  Future<Result<CashSummaryEntity, DomainFailure>> getCashSummary(
     String tenantId,
     DateTime startUtc,
     DateTime endUtc,

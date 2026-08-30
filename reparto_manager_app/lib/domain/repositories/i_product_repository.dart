@@ -43,4 +43,10 @@ abstract class IProductRepository {
     String tenantId,
     String productId,
   );
+
+  /// Obtiene el historial de cambios de precio para auditoría.
+  Future<Result<List<Map<String, dynamic>>, DomainFailure>> getPriceHistory(
+    String tenantId,
+    String productId,
+  );
 }
