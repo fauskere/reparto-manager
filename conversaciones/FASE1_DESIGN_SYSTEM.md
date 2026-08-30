@@ -70,3 +70,8 @@ Ejecución completa de la Fase 1:
    - Ejecutado `flutter analyze lib/core/design_system lib/modules/shell/app_drawer.dart`.
    - Resultado: `No issues found! (ran in 19.4s)`.
    - Todos los archivos respetan el límite estricto de < 500 líneas y funciones < 50 líneas.
+
+5. **Compilación y Despliegue Web (Canal de Pruebas Aislado)**:
+   - Compilación release: `flutter build web --release` con `$env:PUB_CACHE="C:\Reparto-Manager-DEV\.pub-cache"`.
+   - Despliegue exclusivo a canal de preview: `firebase hosting:channel:deploy dev --expires 7d`.
+   - URL activa de pruebas V2: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app` (sin tocar jamás producción).
