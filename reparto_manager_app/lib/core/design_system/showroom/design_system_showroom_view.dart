@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../design_system.dart';
 
-/// Galería Visual y Showroom interactivo para validar todos los componentes
-/// y tokens del Design System de Reparto-Manager V2.
+/// Galería Visual y Showroom interactivo definitivo de Reparto-Manager V2.
 class DesignSystemShowroomView extends StatefulWidget {
   const DesignSystemShowroomView({super.key});
 
@@ -13,22 +12,28 @@ class DesignSystemShowroomView extends StatefulWidget {
 class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool _buttonsLoading = false;
-  bool _buttonsDisabled = false;
-  double _testBalance = 12500.0;
-  final TextEditingController _testInputController =
-      TextEditingController(text: 'Prueba de texto interactivo');
+
+  // Estados interactivos
+  String _selectedVariant = '20 Litros';
+  int _cartQty1 = 2;
+  int _cartQty2 = 1;
+  PaymentMethod _selectedPayment = PaymentMethod.efectivo;
+  DateTime _filterDate = DateTime.now();
+  FilterPeriod _filterPeriod = FilterPeriod.dia;
+  String? _filterZone;
+  String? _filterCategory;
+  final TextEditingController _filterSearchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _testInputController.dispose();
+    _filterSearchController.dispose();
     super.dispose();
   }
 
@@ -38,70 +43,83 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
       backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
         backgroundColor: AppColors.backgroundDark,
-        title: Text('Design System Showroom V2', style: AppTypography.h2),
+        title: Text('Design System Showroom V2', style: AppTypography.h3),
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
           indicatorColor: AppColors.primaryYellow,
           labelColor: AppColors.primaryYellow,
           unselectedLabelColor: AppColors.textSecondary,
           tabs: const [
-            Tab(icon: Icon(Icons.palette_outlined), text: 'Tokens'),
-            Tab(icon: Icon(Icons.smart_button_outlined), text: 'Botones & Inputs'),
-            Tab(icon: Icon(Icons.label_outline), text: 'Badges & Chips'),
-            Tab(icon: Icon(Icons.view_agenda_outlined), text: 'Tarjetas'),
+            Tab(icon: Icon(Icons.view_quilt_outlined), text: 'Estructura'),
+            Tab(icon: Icon(Icons.storefront_outlined), text: 'Catálogo & Productos'),
+            Tab(icon: Icon(Icons.filter_alt_outlined), text: 'Filtros'),
+            Tab(icon: Icon(Icons.point_of_sale_outlined), text: 'Caja & Cobro'),
+            Tab(icon: Icon(Icons.insights_outlined), text: 'Métricas & Avisos'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildTokensTab(),
-          _buildButtonsTab(),
-          _buildBadgesTab(),
-          _buildCardsTab(),
+          _buildStructureTab(),
+          _buildCatalogTab(),
+          _buildFiltersTab(),
+          _buildCheckoutTab(),
+          _buildMetricsTab(),
         ],
       ),
     );
   }
 
-  // --- TAB 1: TOKENS ---
-  Widget _buildTokensTab() {
+  // --- 1. ESTRUCTURA ---
+  Widget _buildStructureTab() {
     return ListView(
       padding: AppSpacing.paddingLg,
       children: [
-        Text('Paleta de Colores', style: AppTypography.h3),
+        Text('Encabezados de Módulo (ModuleHeader)', style: AppTypography.h3),
         const SizedBox(height: AppSpacing.md),
-        Wrap(
-          spacing: AppSpacing.md,
-          runSpacing: AppSpacing.md,
-          children: [
-            _buildColorSwatch('Primary Yellow', AppColors.primaryYellow, AppColors.textOnPrimary),
-            _buildColorSwatch('Background Dark', AppColors.backgroundDark, AppColors.textPrimary),
-            _buildColorSwatch('Surface Dark', AppColors.surfaceDark, AppColors.textPrimary),
-            _buildColorSwatch('Success', AppColors.success, AppColors.textPrimary),
-            _buildColorSwatch('Danger', AppColors.danger, AppColors.textPrimary),
-            _buildColorSwatch('Warning', AppColors.warning, AppColors.textPrimary),
-            _buildColorSwatch('Info', AppColors.info, AppColors.textPrimary),
-          ],
+        AppCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              ModuleHeader(
+                title: 'Clientes',
+                subtitle: '142 clientes activos • Zona Centro',
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.tune_rounded, color: AppColors.primaryYellow),
+                    onPressed: () => AppSnackBar.showSuccess(context, 'Filtros abiertos'),
+                  ),
+                  AppButton(
+                    text: '+ Nuevo',
+                    size: AppButtonSize.small,
+                    onPressed: () => AppSnackBar.showSuccess(context, 'Crear cliente'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: AppSpacing.xl),
-        Text('Escala Tipográfica', style: AppTypography.h3),
+        Text('Títulos de Sección (SectionTitle)', style: AppTypography.h3),
         const SizedBox(height: AppSpacing.md),
         AppCard(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('H1 - Outfit Bold 28px', style: AppTypography.h1),
-              const SizedBox(height: AppSpacing.sm),
-              Text('H2 - Outfit Bold 22px', style: AppTypography.h2),
-              const SizedBox(height: AppSpacing.sm),
-              Text('H3 - Outfit Bold 18px', style: AppTypography.h3),
-              const SizedBox(height: AppSpacing.sm),
-              Text('Body Large - 16px', style: AppTypography.bodyLarge),
-              const SizedBox(height: AppSpacing.sm),
-              Text('Body Medium - 14px', style: AppTypography.bodyMedium),
-              const SizedBox(height: AppSpacing.sm),
-              Text('Body Small - 12px', style: AppTypography.bodySmall),
+              SectionTitle(
+                title: 'Datos de Facturación ARCA',
+                subtitle: 'Condición frente al IVA y CUIT',
+                action: TextButton(
+                  onPressed: () => AppSnackBar.showWarning(context, 'Editando AFIP'),
+                  child: const Text('Editar', style: TextStyle(color: AppColors.primaryYellow)),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              const SectionTitle(
+                title: 'Historial de Saldo y Comprobantes',
+                subtitle: 'Eventos contables inmutables de los últimos 60 días',
+              ),
             ],
           ),
         ),
@@ -109,269 +127,290 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
     );
   }
 
-  Widget _buildColorSwatch(String name, Color color, Color textColor) {
-    return Container(
-      width: 140,
-      padding: AppSpacing.paddingMd,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: AppSpacing.borderRadiusMd,
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            name,
-            style: AppTypography.bodySmall.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
-            style: AppTypography.caption(textColor),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- TAB 2: BOTONES & INPUTS ---
-  Widget _buildButtonsTab() {
+  // --- 2. CATÁLOGO & PRODUCTOS ---
+  Widget _buildCatalogTab() {
     return ListView(
       padding: AppSpacing.paddingLg,
       children: [
-        Row(
+        Text('Selector de Variantes (VariantSelectorChips)', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        VariantSelectorChips(
+          variants: const ['12 Litros', '20 Litros', 'Retornable', 'Descartable'],
+          selectedVariant: _selectedVariant,
+          onVariantSelected: (v) => setState(() => _selectedVariant = v),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        Text('Tarjeta de POS (ProductCard)', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.md),
+        GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: AppSpacing.md,
+          mainAxisSpacing: AppSpacing.md,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          childAspectRatio: 0.82,
           children: [
-            Expanded(
-              child: SwitchListTile(
-                title: Text('Loading', style: AppTypography.bodyMedium),
-                value: _buttonsLoading,
-                activeThumbColor: AppColors.primaryYellow,
-                onChanged: (val) => setState(() => _buttonsLoading = val),
-              ),
+            ProductCard(
+              name: 'Soda Sifón 1.5L (Cajón x6)',
+              price: 4500.0,
+              category: 'Sifones',
+              stock: 24,
+              onAdd: () => AppSnackBar.showSuccess(context, 'Soda Sifón agregada'),
             ),
-            Expanded(
-              child: SwitchListTile(
-                title: Text('Disabled', style: AppTypography.bodyMedium),
-                value: _buttonsDisabled,
-                activeThumbColor: AppColors.primaryYellow,
-                onChanged: (val) => setState(() => _buttonsDisabled = val),
-              ),
+            ProductCard(
+              name: 'Bidón 20 Litros Retornable',
+              price: 3200.0,
+              category: 'Bidones',
+              stock: 3,
+              onAdd: () => AppSnackBar.showSuccess(context, 'Bidón 20L agregado'),
             ),
           ],
         ),
+        const SizedBox(height: AppSpacing.xl),
+        Text('Modo Lista Rápida (ProductListItem)', style: AppTypography.h3),
         const SizedBox(height: AppSpacing.md),
-        Text('Variantes de AppButton', style: AppTypography.h3),
+        ProductListItem(
+          name: 'Agua Mineral 500ml Pack x12',
+          price: 6800.0,
+          category: 'Botellas',
+          stock: 40,
+          onAdd: () => AppSnackBar.showSuccess(context, 'Pack Agua sumado'),
+        ),
+      ],
+    );
+  }
+
+  // --- 3. FILTROS ---
+  Widget _buildFiltersTab() {
+    return ListView(
+      padding: AppSpacing.paddingLg,
+      children: [
+        Text('Barra Universal de Filtros (AppHeaderFilterBar)', style: AppTypography.h3),
         const SizedBox(height: AppSpacing.md),
-        Wrap(
-          spacing: AppSpacing.md,
-          runSpacing: AppSpacing.md,
-          children: [
-            AppButton(
-              text: 'Primario',
-              isLoading: _buttonsLoading,
-              isDisabled: _buttonsDisabled,
-              icon: Icons.check_circle_outline,
-              onPressed: () => _showFeedback('Botón Primario presionado'),
-            ),
-            AppButton(
-              text: 'Secundario',
-              variant: AppButtonVariant.secondary,
-              isLoading: _buttonsLoading,
-              isDisabled: _buttonsDisabled,
-              icon: Icons.refresh,
-              onPressed: () => _showFeedback('Botón Secundario presionado'),
-            ),
-            AppButton(
-              text: 'Peligro',
-              variant: AppButtonVariant.danger,
-              isLoading: _buttonsLoading,
-              isDisabled: _buttonsDisabled,
-              icon: Icons.delete_outline,
-              onPressed: () => _showFeedback('Botón Peligro presionado'),
-            ),
-            AppButton(
-              text: 'Ghost / Texto',
-              variant: AppButtonVariant.ghost,
-              isLoading: _buttonsLoading,
-              isDisabled: _buttonsDisabled,
-              onPressed: () => _showFeedback('Botón Ghost presionado'),
-            ),
-          ],
+        AppHeaderFilterBar(
+          selectedDate: _filterDate,
+          onDateChanged: (d) => setState(() => _filterDate = d),
+          selectedPeriod: _filterPeriod,
+          onPeriodChanged: (p) => setState(() => _filterPeriod = p),
+          selectedZone: _filterZone,
+          zones: const ['Centro', 'Norte', 'Sur', 'Ruta 188', 'Lincoln'],
+          onZoneChanged: (z) => setState(() => _filterZone = z),
+          searchController: _filterSearchController,
+          onSearchChanged: (q) => setState(() {}),
+          onClearSearch: () => setState(() => _filterSearchController.clear()),
+          showCategories: true,
+          categories: const ['Sifones', 'Bidones', 'Máquinas', 'Repuestos'],
+          selectedCategory: _filterCategory,
+          onCategoryChanged: (c) => setState(() => _filterCategory = c),
+        ),
+      ],
+    );
+  }
+
+  // --- 4. CAJA & COBRO ---
+  Widget _buildCheckoutTab() {
+    final saleTotal = (4500.0 * _cartQty1) + (3200.0 * _cartQty2);
+
+    return ListView(
+      padding: AppSpacing.paddingLg,
+      children: [
+        Text('Carrito de Venta (CartItemRow)', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        CartItemRow(
+          productName: 'Soda Sifón 1.5L (Cajón x6)',
+          unitPrice: 4500.0,
+          quantity: _cartQty1,
+          onQuantityChanged: (q) => setState(() => _cartQty1 = q),
+          onRemove: () => AppSnackBar.showError(context, 'Sifón eliminado'),
+        ),
+        CartItemRow(
+          productName: 'Bidón 20 Litros Retornable',
+          unitPrice: 3200.0,
+          quantity: _cartQty2,
+          onQuantityChanged: (q) => setState(() => _cartQty2 = q),
+          onRemove: () => AppSnackBar.showError(context, 'Bidón eliminado'),
         ),
         const SizedBox(height: AppSpacing.lg),
-        AppButton(
-          text: 'Botón Full Width',
-          fullWidth: true,
-          isLoading: _buttonsLoading,
-          isDisabled: _buttonsDisabled,
-          onPressed: () => _showFeedback('Botón Full Width presionado'),
+        Text('Forma de Pago', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        PaymentMethodSelector(
+          selectedMethod: _selectedPayment,
+          onMethodChanged: (m) => setState(() => _selectedPayment = m),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text('Calculadora de Vuelto', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        QuickCashCalculator(
+          totalToPay: saleTotal,
+          onAmountSelected: (amt) {
+            final vuelto = amt - saleTotal;
+            AppSnackBar.showSuccess(context, vuelto >= 0 ? 'Vuelto: \$$vuelto' : 'Falta dinero');
+          },
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text('Desglose Contable', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        PaymentSummaryBox(
+          previousBalance: 5000.0,
+          saleTotal: saleTotal,
+          paidAmount: _selectedPayment == PaymentMethod.pendiente ? 0.0 : saleTotal,
         ),
         const SizedBox(height: AppSpacing.xl),
-        Text('Campos de Texto (AppTextField)', style: AppTypography.h3),
-        const SizedBox(height: AppSpacing.md),
-        AppTextField(
-          label: 'Buscador de clientes o productos',
-          hintText: 'Ingrese nombre o zona...',
-          controller: _testInputController,
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () => _testInputController.clear(),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        const AppTextField(
-          label: 'Monto de Cobro',
-          hintText: '\$0.00',
-          keyboardType: TextInputType.number,
-          prefixIcon: Icon(Icons.attach_money),
-        ),
-      ],
-    );
-  }
-
-  // --- TAB 3: BADGES & CHIPS ---
-  Widget _buildBadgesTab() {
-    return ListView(
-      padding: AppSpacing.paddingLg,
-      children: [
-        Text('BalanceBadge (Saldos Matemáticos)', style: AppTypography.h3),
+        Text('Diálogos del Sistema', style: AppTypography.h3),
         const SizedBox(height: AppSpacing.sm),
-        Text(
-          'Simulador de Saldo: \$${_testBalance.toStringAsFixed(0)}',
-          style: AppTypography.bodyMedium,
-        ),
-        Slider(
-          value: _testBalance,
-          min: -10000,
-          max: 30000,
-          divisions: 40,
-          activeColor: AppColors.primaryYellow,
-          onChanged: (val) => setState(() => _testBalance = val),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            BalanceBadge(balance: _testBalance, size: BalanceBadgeSize.small),
-            BalanceBadge(balance: _testBalance, size: BalanceBadgeSize.medium),
-            BalanceBadge(balance: _testBalance, size: BalanceBadgeSize.large),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        Text('Casos Predefinidos de Balance', style: AppTypography.h4),
-        const SizedBox(height: AppSpacing.md),
-        const Wrap(
+        Wrap(
           spacing: AppSpacing.md,
-          runSpacing: AppSpacing.md,
-          children: [
-            BalanceBadge(balance: 0.0),
-            BalanceBadge(balance: 45000.0),
-            BalanceBadge(balance: -1500.0),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        Text('StatusChips (Estados de Visita)', style: AppTypography.h3),
-        const SizedBox(height: AppSpacing.md),
-        Wrap(
-          spacing: AppSpacing.sm,
           runSpacing: AppSpacing.sm,
           children: [
-            StatusChip.visit('visited'),
-            StatusChip.visit('not_visited'),
-            StatusChip.visit('pending'),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        Text('StatusChips (Tipos de Cliente)', style: AppTypography.h3),
-        const SizedBox(height: AppSpacing.md),
-        Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: [
-            StatusChip.clientType('normal'),
-            StatusChip.clientType('especial'),
-            StatusChip.clientType('revendedor'),
+            AppButton(
+              text: 'Modal Éxito',
+              icon: Icons.check_circle_outline,
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => AppSuccessDialog(
+                  subtitle: 'Cliente: Almacén Don Carlos',
+                  totalFormatted: '\$${saleTotal.toInt()}',
+                  onPrintDuplicate: () => AppSnackBar.showSuccess(context, 'Imprimiendo duplicado...'),
+                  onSendWhatsApp: () => AppSnackBar.showSuccess(context, 'Enviando WhatsApp...'),
+                ),
+              ),
+            ),
+            AppButton(
+              text: 'Ver Ticket',
+              variant: AppButtonVariant.secondary,
+              icon: Icons.receipt_long_rounded,
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => AppReceiptPreviewDialog(
+                  businessName: 'María Belén',
+                  receiptNumber: '0001-00049281',
+                  clientName: 'Almacén Don Carlos',
+                  itemsLines: const [
+                    '2x Soda Sifón 1.5L        \$9.000',
+                    '1x Bidón 20L Retornable    \$3.200',
+                  ],
+                  totalFormatted: '\$12.200',
+                  onPrint: () => AppSnackBar.showSuccess(context, 'Ticket impreso'),
+                  onLoadInPos: () => AppSnackBar.showSuccess(context, 'Cargado en POS'),
+                ),
+              ),
+            ),
+            AppButton(
+              text: 'Confirmar Anulación',
+              variant: AppButtonVariant.danger,
+              icon: Icons.warning_amber_rounded,
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => AppConfirmDialog(
+                  title: '¿Anular Venta?',
+                  message: 'Esta acción revertirá los saldos y el stock de camioneta.',
+                  onConfirm: () => AppSnackBar.showError(context, 'Venta anulada'),
+                ),
+              ),
+            ),
           ],
         ),
       ],
     );
   }
 
-  // --- TAB 4: TARJETAS & CLIENTES ---
-  Widget _buildCardsTab() {
+  // --- 5. MÉTRICAS & AVISOS ---
+  Widget _buildMetricsTab() {
     return ListView(
       padding: AppSpacing.paddingLg,
       children: [
-        Text('AppCard Básica', style: AppTypography.h3),
+        Text('Tarjetas de Resumen (MetricSummaryCard)', style: AppTypography.h3),
         const SizedBox(height: AppSpacing.md),
-        AppCard(
-          onTap: () => _showFeedback('AppCard tocada'),
+        const Row(
+          children: [
+            Expanded(
+              child: MetricSummaryCard(
+                title: 'Total Ventas',
+                amount: 485000.0,
+                icon: Icons.trending_up_rounded,
+                accentColor: AppColors.primaryYellow,
+              ),
+            ),
+            SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: MetricSummaryCard(
+                title: 'Efectivo',
+                amount: 320000.0,
+                icon: Icons.payments_rounded,
+                accentColor: AppColors.success,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        Text('Top 5 Productos Más Vendidos (RankingItemRow)', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        const AppCard(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Tarjeta Genérica Táctil', style: AppTypography.h4),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'Superficie oscura #2C2C2C con borde sutil al 15% de opacidad y feedback táctil.',
-                style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
+              RankingItemRow(
+                rank: 1,
+                name: 'Soda Sifón 1.5L (Cajón x6)',
+                value: 120,
+                maxValue: 120,
+                isCurrency: false,
+                secondaryInfo: 'Categoría: Sifones',
+              ),
+              RankingItemRow(
+                rank: 2,
+                name: 'Bidón 20 Litros Retornable',
+                value: 85,
+                maxValue: 120,
+                isCurrency: false,
+                secondaryInfo: 'Categoría: Bidones',
+              ),
+              RankingItemRow(
+                rank: 3,
+                name: 'Agua Mineral 500ml Pack x12',
+                value: 45,
+                maxValue: 120,
+                isCurrency: false,
+                secondaryInfo: 'Categoría: Botellas',
               ),
             ],
           ),
         ),
         const SizedBox(height: AppSpacing.xl),
-        Text('ClientCards (Molécula de Reparto / Mostrador)', style: AppTypography.h3),
-        const SizedBox(height: AppSpacing.md),
-        ClientCard(
-          name: 'Almacén Don Carlos',
-          zone: 'Zona Centro',
-          address: 'Av. San Martín 1420',
-          phone: '2355-441234',
-          clientType: 'normal',
-          visitStatus: 'not_visited',
-          balance: 18400.0,
-          onTap: () => _showFeedback('Ficha Don Carlos'),
-          onPosAction: () => _showFeedback('Cargar POS para Don Carlos'),
-          onPhoneTap: () => _showFeedback('Llamando a Don Carlos'),
+        Text('Alertas Flotantes (AppSnackBar)', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        Wrap(
+          spacing: AppSpacing.md,
+          runSpacing: AppSpacing.sm,
+          children: [
+            AppButton(
+              text: 'Éxito',
+              icon: Icons.check,
+              onPressed: () => AppSnackBar.showSuccess(context, 'Cobro registrado correctamente'),
+            ),
+            AppButton(
+              text: 'Error',
+              variant: AppButtonVariant.danger,
+              icon: Icons.error_outline,
+              onPressed: () => AppSnackBar.showError(context, 'Error al conectar con la impresora'),
+            ),
+            AppButton(
+              text: 'Aviso',
+              variant: AppButtonVariant.secondary,
+              icon: Icons.warning_amber,
+              onPressed: () => AppSnackBar.showWarning(context, 'Cliente con deuda previa acumulada'),
+            ),
+          ],
         ),
-        const SizedBox(height: AppSpacing.md),
-        ClientCard(
-          name: 'Restaurante Lincoln Plaza',
-          zone: 'Zona Norte',
-          address: 'Belgrano 550',
-          clientType: 'especial',
-          visitStatus: 'visited',
-          balance: 0.0,
-          isHighlighted: true,
-          onTap: () => _showFeedback('Ficha Lincoln Plaza'),
-          onPosAction: () => _showFeedback('Cargar POS para Lincoln Plaza'),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        ClientCard(
-          name: 'Distribuidora San Cayetano',
-          zone: 'Ruta 188',
-          address: 'Km 215',
-          clientType: 'revendedor',
-          visitStatus: 'pending',
-          balance: -3500.0,
-          onTap: () => _showFeedback('Ficha San Cayetano'),
+        const SizedBox(height: AppSpacing.xl),
+        Text('Estado Vacío (EmptyStateWidget)', style: AppTypography.h3),
+        const SizedBox(height: AppSpacing.sm),
+        EmptyStateWidget(
+          title: 'Sin clientes en esta zona',
+          description: 'No se encontraron clientes registrados en la Zona Norte.',
+          actionText: '+ Agregar Cliente',
+          onAction: () => AppSnackBar.showSuccess(context, 'Nuevo cliente'),
         ),
       ],
-    );
-  }
-
-  void _showFeedback(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.surfaceDarkElevated,
-        duration: const Duration(seconds: 1),
-      ),
     );
   }
 }

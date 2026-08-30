@@ -33,14 +33,25 @@
    - Los reportes anuales/mensuales leen registros consolidados diarios/mensuales precalculados, nunca suman decenas de miles de tickets en caliente.
 6. **Single Source of Truth en UI (Cero Código Residual)**:
    - Toda la interfaz de la aplicación se ensambla exclusivamente a partir de los componentes atómicos del Design System (`lib/core/design_system/widgets/`). Prohibido estilizar botones, encabezados, badges o diálogos sueltos en las vistas para evitar inconsistencias y código residual.
+7. **Principio YAGNI y Entrega Incremental Proactiva**:
+   - Construir y diseñar únicamente los componentes y modelos requeridos para la fase en curso. No adelantar pantallas ni selectores de fases futuras sobre supuestos no definidos (ej: AFIP o mesas de pizzería se crean en sus fases correspondientes).
+   - Proactividad Big Tech: Anticipar la arquitectura de grandes empresas (Shopify, Stripe, Square) en concurrencia, resiliencia y datos sin esperar que el usuario tenga que señalar los vacíos técnicos.
 
   5. **Purga Absoluta de Deuda Técnica V1 y Clean Boot**:
      - Se eliminaron por completo `lib/modules/`, `lib/models/`, `lib/widgets/`, `lib/scripts/` y archivos sueltos de V1.
      - `lib/main.dart` reescrito desde cero (47 líneas) con inicio directo al `DesignSystemShowroomView`.
      - `lib/` contiene única y exclusivamente `lib/core/design_system/`, `firebase_options.dart` y `main.dart`.
      - Despliegue web en canal secundario `dev`: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
-- **Problemas**: Ninguno. 100% verificado y limpio.
-- **Pendientes**: Fase 2 (Esqueleto de Entidades Inmutables de Dominio y Repositorios Clean Architecture).
+  6. **Consolidación Definitiva del UI Kit V2 (6 Módulos Transversales < 400 líneas)**:
+     - **Encabezados & Estructura (`module_header.dart`)**: `ModuleHeader` y `SectionTitle`.
+     - **Productos & Catálogo (`product_widgets.dart`)**: `ProductCard`, `ProductListItem` y `VariantSelectorChips`.
+     - **Barra Universal de Filtros (`app_header_filter_bar.dart`)**: Fechas compactas con HOY dinámico, períodos, zonas y categorías.
+     - **Checkout, Carrito & Vuelto (`checkout_widgets.dart`)**: `CartItemRow`, `PaymentMethodSelector`, `PaymentSummaryBox` y `QuickCashCalculator`.
+     - **Diálogos & Modales (`app_dialogs.dart`)**: `AppModalDialog`, `AppConfirmDialog`, `AppReceiptPreviewDialog` (con botón CARGAR EN POS) y `AppSuccessDialog`.
+     - **Métricas, Rankings & Estados (`feedback_and_metrics_widgets.dart`)**: `MetricSummaryCard`, `RankingItemRow`, `EmptyStateWidget` y `AppSnackBar`.
+     - **Showroom Definitivo (`design_system_showroom_view.dart`)**: 5 pestañas interactivas de prueba táctil completa.
+- **Problemas**: Ninguno. 100% verificado con flutter analyze (0 errores, 0 warnings).
+- **Pendientes**: Fase 2 (Clean Architecture: Domain Entities, Repositorios SQLite/Firebase y Event Ledger).
 
 ## 27/08/2026 - Versión v2.9.80 (Producción Limpia: Fix Sincronización Sincrónica de Ventas y Reconexión Forzada)
 - **Qué se hizo**:

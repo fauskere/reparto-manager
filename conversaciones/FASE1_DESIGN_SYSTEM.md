@@ -83,3 +83,14 @@ Ejecución completa de la Fase 1:
      - `lib/firebase_options.dart`.
      - `lib/main.dart` (47 líneas exactas, inicio directo a `DesignSystemShowroomView` con tema oscuro).
    - Recompilación y re-despliegue web en el canal secundario `dev` comprobado con éxito.
+
+7. **Consolidación Definitiva del UI Kit V2 (6 Módulos Transversales < 400 líneas)**:
+   - **Encabezados & Estructura (`module_header.dart`)**: `ModuleHeader` y `SectionTitle`.
+   - **Productos & Catálogo (`product_widgets.dart`)**: `ProductCard`, `ProductListItem` y `VariantSelectorChips`.
+   - **Barra de Filtros Universal (`app_header_filter_bar.dart`)**: Fechas compactas con HOY dinámico, períodos, zonas y categorías.
+   - **Checkout, Carrito & Vuelto (`checkout_widgets.dart`)**: `CartItemRow`, `PaymentMethodSelector`, `PaymentSummaryBox` y `QuickCashCalculator`.
+   - **Diálogos & Modales (`app_dialogs.dart`)**: `AppModalDialog`, `AppConfirmDialog`, `AppReceiptPreviewDialog` (con CARGAR EN POS) y `AppSuccessDialog`.
+   - **Métricas & Estados (`feedback_and_metrics_widgets.dart`)**: `MetricSummaryCard`, `RankingItemRow`, `EmptyStateWidget` y `AppSnackBar`.
+   - **Showroom Definitivo (`design_system_showroom_view.dart`)**: 5 pestañas interactivas completas (Estructura, Catálogo & Productos, Filtros, Caja & Cobro, Métricas & Avisos).
+   - **Verificación**: `flutter analyze lib` con `No issues found!` (0 errores, 0 warnings).
+   - **Despliegue Web dev**: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.

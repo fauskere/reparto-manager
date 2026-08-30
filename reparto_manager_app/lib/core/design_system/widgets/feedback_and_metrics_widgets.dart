@@ -1,0 +1,300 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../tokens/app_colors.dart';
+import '../tokens/app_spacing.dart';
+import '../tokens/app_typography.dart';
+import 'app_button.dart';
+import 'app_card.dart';
+
+/// Tarjeta de métrica y resumen financiero para reportes y arqueo de caja.
+class MetricSummaryCard extends StatelessWidget {
+  final String title;
+  final double amount;
+  final IconData icon;
+  final Color accentColor;
+  final String? subtitle;
+  final bool isCurrency;
+
+  const MetricSummaryCard({
+    super.key,
+    required this.title,
+    required this.amount,
+    required this.icon,
+    this.accentColor = AppColors.primaryYellow,
+    this.subtitle,
+    this.isCurrency = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final currency = NumberFormat.currency(locale: 'es_AR', symbol: '\$', decimalDigits: 0);
+    final formattedValue = isCurrency ? currency.format(amount) : amount.toInt().toString();
+
+    return AppCard(
+      padding: AppSpacing.paddingMd,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title.toUpperCase(),
+                style: AppTypography.bodySmall.copyWith(
+                  letterSpacing: 0.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: accentColor, size: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            formattedValue,
+            style: AppTypography.currencyLarge.copyWith(
+              color: accentColor,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          if (subtitle != null && subtitle!.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              subtitle!,
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 11),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Fila para ranking Top 10 con medalla/puesto, datos y barra de progreso.
+class RankingItemRow extends StatelessWidget {
+  final int rank;
+  final String name;
+  final double value;
+  final double maxValue;
+  final String? secondaryInfo;
+  final bool isCurrency;
+
+  const RankingItemRow({
+    super.key,
+    required this.rank,
+    required this.name,
+    required this.value,
+    required this.maxValue,
+    this.secondaryInfo,
+    this.isCurrency = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final currency = NumberFormat.currency(locale: 'es_AR', symbol: '\$', decimalDigits: 0);
+    final formattedValue = isCurrency ? currency.format(value) : '${value.toInt()} u.';
+    final progress = maxValue > 0 ? (value / maxValue).clamp(0.0, 1.0) : 0.0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _buildRankBadge(),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      name,
+                      style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w700),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (secondaryInfo != null)
+                      Text(
+                        secondaryInfo!,
+                        style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 11),
+                      ),
+                  ],
+                ),
+              ),
+              Text(
+                formattedValue,
+                style: AppTypography.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.primaryYellow,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 4,
+              backgroundColor: AppColors.surfaceDarkElevated,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                rank <= 3 ? AppColors.primaryYellow : AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRankBadge() {
+    Color badgeColor = AppColors.surfaceDarkElevated;
+    Color textColor = AppColors.textSecondary;
+
+    if (rank == 1) {
+      badgeColor = const Color(0xFFFFD700);
+      textColor = Colors.black;
+    } else if (rank == 2) {
+      badgeColor = const Color(0xFFC0C0C0);
+      textColor = Colors.black;
+    } else if (rank == 3) {
+      badgeColor = const Color(0xFFCD7F32);
+      textColor = Colors.black;
+    }
+
+    return Container(
+      width: 26,
+      height: 26,
+      decoration: BoxDecoration(
+        color: badgeColor,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          '$rank',
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.w900,
+            fontSize: 12,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Estado visual amigable para listas vacías o búsquedas sin resultados.
+class EmptyStateWidget extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? description;
+  final String? actionText;
+  final VoidCallback? onAction;
+
+  const EmptyStateWidget({
+    super.key,
+    this.icon = Icons.search_off_rounded,
+    required this.title,
+    this.description,
+    this.actionText,
+    this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: AppSpacing.paddingXl,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceDarkElevated,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 48, color: AppColors.textMuted),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              title,
+              style: AppTypography.h3.copyWith(fontWeight: FontWeight.w700),
+              textAlign: TextAlign.center,
+            ),
+            if (description != null) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                description!,
+                style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                textAlign: TextAlign.center,
+              ),
+            ],
+            if (actionText != null && onAction != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              AppButton(
+                text: actionText!,
+                onPressed: onAction,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Notificaciones SnackBar semánticas unificadas.
+class AppSnackBar {
+  AppSnackBar._();
+
+  static void showSuccess(BuildContext context, String message) {
+    _show(context, message, AppColors.success, Icons.check_circle_rounded);
+  }
+
+  static void showError(BuildContext context, String message) {
+    _show(context, message, AppColors.danger, Icons.error_outline_rounded);
+  }
+
+  static void showWarning(BuildContext context, String message) {
+    _show(context, message, AppColors.warning, Icons.warning_amber_rounded);
+  }
+
+  static void _show(BuildContext context, String message, Color color, IconData icon) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.surfaceDarkElevated,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppSpacing.borderRadiusMd,
+          side: BorderSide(color: color.withValues(alpha: 0.5)),
+        ),
+        content: Row(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                message,
+                style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+}
