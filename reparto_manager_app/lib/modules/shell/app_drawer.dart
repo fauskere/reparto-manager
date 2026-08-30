@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme.dart';
 import '../../core/preferences_service.dart';
+import '../../core/design_system/design_system.dart';
 import 'app_shell.dart';
 import '../clients/price_catalog_view.dart';
 
@@ -90,7 +91,7 @@ class _AppDrawerState extends State<AppDrawer> {
           ),
         ),
         selected: isSelected,
-        selectedTileColor: AppTheme.primaryYellow.withOpacity(0.1),
+        selectedTileColor: AppTheme.primaryYellow.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -158,6 +159,26 @@ class _AppDrawerState extends State<AppDrawer> {
                       onTap: () {
                         Navigator.of(context).popUntil((route) => route.isFirst);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const PriceCatalogView()));
+                      },
+                    ),
+                    const SizedBox(height: 4),
+                    ListTile(
+                      leading: const Icon(Icons.auto_awesome_outlined, color: AppTheme.primaryYellow),
+                      title: const Text(
+                        'UI Kit Showroom (V2)',
+                        style: TextStyle(
+                          color: AppTheme.primaryYellow,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      onTap: () {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const DesignSystemShowroomView()),
+                        );
                       },
                     ),
                   ],

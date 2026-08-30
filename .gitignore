@@ -1,0 +1,4 @@
+.pub-cache/
+.dart_tool/
+build/
+*.apk
