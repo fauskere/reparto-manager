@@ -75,3 +75,11 @@ Ejecución completa de la Fase 1:
    - Compilación release: `flutter build web --release` con `$env:PUB_CACHE="C:\Reparto-Manager-DEV\.pub-cache"`.
    - Despliegue exclusivo a canal de preview: `firebase hosting:channel:deploy dev --expires 7d`.
    - URL activa de pruebas V2: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app` (sin tocar jamás producción).
+
+6. **Purga Física Absoluta de Deuda Técnica V1 y Clean Boot**:
+   - Eliminados todos los módulos, modelos, scripts y widgets viejos de la V1 (`lib/modules/`, `lib/models/`, `lib/widgets/`, `lib/scripts/`).
+   - `lib/` quedó 100% limpio conteniendo exclusivamente:
+     - `lib/core/design_system/` (Tokens, Widgets atómicos y Showroom).
+     - `lib/firebase_options.dart`.
+     - `lib/main.dart` (47 líneas exactas, inicio directo a `DesignSystemShowroomView` con tema oscuro).
+   - Recompilación y re-despliegue web en el canal secundario `dev` comprobado con éxito.

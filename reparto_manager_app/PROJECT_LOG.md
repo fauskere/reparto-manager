@@ -18,6 +18,11 @@
      - `flutter analyze` verificado sin errores ni advertencias (0 issues).
      - Todos los archivos respetan el límite estricto de < 500 líneas y funciones < 50 líneas.
      - Bitácora completa archivada en `conversaciones/FASE1_DESIGN_SYSTEM.md`.
+  5. **Purga Absoluta de Deuda Técnica V1 y Clean Boot**:
+     - Se eliminaron por completo `lib/modules/`, `lib/models/`, `lib/widgets/`, `lib/scripts/` y archivos sueltos de V1.
+     - `lib/main.dart` reescrito desde cero (47 líneas) con inicio directo al `DesignSystemShowroomView`.
+     - `lib/` contiene única y exclusivamente `lib/core/design_system/`, `firebase_options.dart` y `main.dart`.
+     - Despliegue web en canal secundario `dev`: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
 - **Problemas**: Ninguno. 100% verificado y limpio.
 - **Pendientes**: Fase 2 (Esqueleto de Entidades Inmutables de Dominio y Repositorios Clean Architecture).
 
