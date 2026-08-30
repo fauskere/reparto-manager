@@ -18,6 +18,22 @@
      - `flutter analyze` verificado sin errores ni advertencias (0 issues).
      - Todos los archivos respetan el límite estricto de < 500 líneas y funciones < 50 líneas.
      - Bitácora completa archivada en `conversaciones/FASE1_DESIGN_SYSTEM.md`.
+
+### 🚀 REGLAS MAESTRAS DE ESCALABILIDAD MASIVA & SINGLE SOURCE OF TRUTH (BIG TECH):
+1. **Multi-Tenancy Estricto por Usuario (`tenantId`)**:
+   - Cada consulta de datos está estrictamente aislada por el usuario autenticado (`tenantId`/`userId`). Queda prohibido descargar o recorrer colecciones globales.
+2. **Separación de Datos Calientes (Hot) vs. Fríos (Cold)**:
+   - El dispositivo almacena en base de datos local SQLite indexada solo los datos calientes (catálogo activo, clientes de la ruta, ventas/cobranzas de los últimos 30 a 60 días).
+   - El historial de años anteriores (10.000 a 100.000+ tickets) vive en la nube y se consulta bajo demanda para no saturar memoria RAM ni datos móviles.
+3. **Snapshots Contables de Saldo (Ledger Sharding)**:
+   - Los saldos se calculan instantáneamente a partir de balances consolidados periódicos (snapshots mensuales/anuales) + eventos recientes, garantizando consultas en milisegundos sin re-procesar años de historia.
+4. **Paginación Obligatoria (Virtual Scrolling)**:
+   - Todas las listas de ventas, clientes y comprobantes deben cargar en bloques paginados (ej: de a 20 o 50 registros) para mantener 60 FPS estables y memoria RAM aliviada.
+5. **Métricas Pre-agregadas para Reportes**:
+   - Los reportes anuales/mensuales leen registros consolidados diarios/mensuales precalculados, nunca suman decenas de miles de tickets en caliente.
+6. **Single Source of Truth en UI (Cero Código Residual)**:
+   - Toda la interfaz de la aplicación se ensambla exclusivamente a partir de los componentes atómicos del Design System (`lib/core/design_system/widgets/`). Prohibido estilizar botones, encabezados, badges o diálogos sueltos en las vistas para evitar inconsistencias y código residual.
+
   5. **Purga Absoluta de Deuda Técnica V1 y Clean Boot**:
      - Se eliminaron por completo `lib/modules/`, `lib/models/`, `lib/widgets/`, `lib/scripts/` y archivos sueltos de V1.
      - `lib/main.dart` reescrito desde cero (47 líneas) con inicio directo al `DesignSystemShowroomView`.
