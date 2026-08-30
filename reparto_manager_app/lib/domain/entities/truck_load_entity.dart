@@ -90,6 +90,25 @@ class TruckLoadEntity {
     return copyWith(damagedItems: updatedDamaged);
   }
 
+  /// Pasa mercadería dañada del inventario útil hacia el stock dañado.
+  TruckLoadEntity registerDamagedStock({
+    required String variantKey,
+    required int quantity,
+  }) {
+    final updatedInv = Map<String, int>.from(inventory);
+    final currentInv = updatedInv[variantKey] ?? 0;
+    updatedInv[variantKey] = currentInv - quantity;
+
+    final updatedDamaged = Map<String, int>.from(damagedItems);
+    final currentDamaged = updatedDamaged[variantKey] ?? 0;
+    updatedDamaged[variantKey] = currentDamaged + quantity;
+
+    return copyWith(
+      inventory: updatedInv,
+      damagedItems: updatedDamaged,
+    );
+  }
+
   /// Ajusta el inventario de una variante sumando o restando [delta].
   TruckLoadEntity adjustStock({
     required String variantKey,

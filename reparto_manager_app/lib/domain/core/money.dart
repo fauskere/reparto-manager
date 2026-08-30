@@ -13,6 +13,9 @@ class Money implements Comparable<Money> {
   final int cents;
 
   /// Constructor constante a partir de centavos enteros.
+  const Money(this.cents);
+
+  /// Constructor constante a partir de centavos enteros.
   const Money.fromCents(this.cents);
 
   /// Constructor a partir de unidades monetarias estándar (ej: pesos).

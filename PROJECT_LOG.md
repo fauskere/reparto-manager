@@ -1,3 +1,39 @@
+## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.4: Casos de Uso del Dominio Puro - CIERRE DEFINITIVO DE FASE 2)
+- **Qué se hizo**:
+  1. **Los 18 Casos de Uso de Negocio Puro (`lib/domain/usecases/`)**:
+     - Precios y Promociones:
+       * `ResolveProductPriceUseCase`: Jerarquía estricta: `customPrices[variantKey]` > `specialPrice` > `resellerPrice` > `basePrice`.
+       * `DuplicateClientPricesUseCase`: Clonación atómica de matrices de precios especiales entre clientes de ruta.
+       * `ApplyPromotionUseCase`: Evaluación de combos (`isEligible`) y cálculo de descuento porcentual.
+     - Gestión Móvil de Stock en Camioneta:
+       * `LoadTruckStockUseCase`: Carga matutina sumando existencias a la capacidad útil.
+       * `UnloadTruckStockUseCase`: Descarga de sobrantes al depósito tras el recorrido.
+       * `RegisterDamagedStockUseCase`: Registro de roturas/mermas traspasando stock útil a `damagedItems`.
+     - Ciclo de Vida de Ventas:
+       * `ProcessSaleUseCase`: Validación de invariantes contables, correlativo de ticket, descuento de stock con devoluciones/cambios (`exchanges`), partida doble en Ledger (Débito por venta + Crédito por cobro) y marcado de visita.
+       * `UpdateSaleUseCase`: Modificación de venta previa, cálculo de deltas de existencias y asiento contable por diferencia de deuda.
+       * `CancelSaleUseCase`: Anulación con restitución íntegra de stock al camión y contra-asiento de crédito en el Ledger.
+     - Rutas y Clientes:
+       * `ResetZoneRouteUseCase`: Reinicio de visitas matutinas a `notVisited` por zona.
+       * `CalculateClientBalanceUseCase`: Cumplimiento estricto de la **Regla 9** (cero forzado manual; suma matemática de último snapshot + asientos delta posteriores).
+     - Cobranzas y Ajustes:
+       * `RegisterPaymentUseCase`: Cobro simple o mixto con recibo correlativo, crédito contable y visita.
+       * `CancelPaymentUseCase`: Anulación de cobro con contra-asiento de débito restituyendo la deuda real.
+       * `RecordManualAdjustmentUseCase`: Asiento de saldos iniciales (libreta vieja) o notas de crédito/débito auditadas.
+     - Cierres y Facturación Masiva:
+       * `GenerateLedgerSnapshotUseCase`: Consolidación periódica de cuenta corriente para consultas en O(1) (**Regla 11**).
+       * `CreateGroupInvoiceUseCase`: Facturación agrupada bajo demanda para cadenas comerciales.
+       * `PayGroupInvoiceUseCase`: Cobro consolidado de factura de grupo y acreditación contable en Ledger.
+       * `GenerateCashSummaryUseCase`: Arqueo diario distinguiendo billetes físicos a rendir vs dinero en cuenta bancaria.
+  2. **Batería de Pruebas Unitarias (`test/domain/usecases/`)**:
+     - 4 suites modulares (< 300 líneas c/u): `pricing_and_promos_use_cases_test.dart`, `truck_use_cases_test.dart`, `sales_use_cases_test.dart`, `ledger_and_payments_use_cases_test.dart`.
+     - **41/41 tests aprobados (100% éxito)** en toda la capa de dominio.
+  3. **Verificación Estática y Métricas**:
+     - `flutter analyze`: **0 issues found** (cero errores, cero warnings).
+     - Todos los archivos del dominio y pruebas cumplen estrictamente la regla de `< 300 líneas` y funciones `< 40 líneas`.
+- **Problemas**: Ninguno.
+- **Pendientes**: Inicio de la **Fase 3: Capa de Infraestructura y Persistencia Local (SQLite, DAOs y Sincronización)**.
+
 ## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.3: Contratos de Repositorio IoC y Arqueo Diario de Caja)
 - **Qué se hizo**:
   1. **Entidad de Arqueo de Caja Diario (`lib/domain/entities/cash_summary_entity.dart`)**:
