@@ -1,3 +1,31 @@
+## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.1: Núcleo Matemático, Primitivas y Event Sourcing Contable)
+- **Qué se hizo**:
+  1. **Value Object Dinero (`lib/domain/core/money.dart`)**:
+     - Implementada clase inmutable `Money` basada en enteros (`int cents`) para eliminar por completo los errores de coma flotante binaria.
+     - Directiva bancaria estricta: `Money.fromUnits(num units)` utiliza exclusivamente `(units * 100).round()` para evitar pérdidas de precisión por truncamiento de `toInt()`.
+     - Operaciones matemáticas exactas: suma (`+`), resta (`-`), multiplicación escalar (`*`) con redondeo Half-Up y método seguro `divide(num divisor)` que previene crasheos por división por cero retornando `Result.fail(InvalidMoneyAmountFailure)`.
+     - Comparadores matemáticos (`==`, `<`, `>`, `<=`, `>=`, `isZero`, `isPositive`, `isNegative`, `abs()`).
+     - Formateo comercial argentino: separador de miles con punto (`.`) y centavos en coma (`,`), formateando a entero limpio (ej: `$1.250`) cuando termina en `00` salvo que se invoque con `forceDecimals: true`.
+  2. **Manejo Funcional de Resultados y Fallos (`lib/domain/core/result.dart` y `domain_failures.dart`)**:
+     - Estructura sellada `Result<S, F>` con variantes `Success<S, F>` y `Failure<S, F>`, métodos funcionales `fold`, `map`, `mapFailure`, eliminando excepciones no controladas en el dominio.
+     - Jerarquía inmutable de fallos: `InvalidMoneyAmountFailure`, `NegativeAmountNotAllowedFailure` y `BalanceCalculationFailure`.
+  3. **Entidad Contable Inmutable & Ledger Sharding (`lib/domain/entities/ledger_entry_entity.dart`)**:
+     - `LedgerEntryEntity`: Asiento contable atómico bajo el patrón Event Sourcing (Stripe / Martin Fowler) con particionado multi-tenant (`tenantId`), `clientId`, `date` UTC, `type` (`LedgerEntryType`), `referenceId`, `amount` y `description`.
+     - Auditoría total y balance inmutable: `balanceImpact` suma `+amount` en deudas (`saleDebt`, `adjustmentDebt`) y resta `-amount` en cobranzas y créditos (`paymentCredit`, `adjustmentCredit`).
+     - `LedgerSnapshot`: Soporte para cortes y cierres periódicos contables para resolver saldos en O(1) sin reprocesar años de historia.
+  4. **Batería de Pruebas Unitarias (`test/domain/core/money_test.dart` y `test/domain/entities/ledger_entry_test.dart`)**:
+     - 14 tests unitarios ejecutados con éxito (100% pass):
+       a) Precisión decimal exacta demostrada (sumas de múltiples centavos dan exacto).
+       b) Débito y crédito restados a la perfección calculando el saldo exacto.
+       c) Imposibilidad física de crear montos corruptos (NaN, infinitos o montos negativos en asientos).
+       d) Verificación de directiva 4: Venta con entrega en efectivo registrada como 2 asientos independientes (deuda completa y cobranza parcial).
+  5. **Verificación y Calidad**:
+     - `flutter test`: 14/14 tests aprobados.
+     - `flutter analyze`: 0 issues found (0 errores, 0 warnings).
+     - Límites de código estrictos cumplidos: todos los archivos < 300 líneas y funciones < 40 líneas.
+- **Problemas**: Ninguno.
+- **Pendientes**: Paso 2.2 de la Fase 2 (Entidades de Dominio: Cliente, Producto, Venta/Cobro y Catálogo).
+
 ## 29/08/2026 - Versión V2 (Fase 1 Completada: Design System & UI Kit Nativo)
 - **Qué se hizo**:
   1. **Tokens de Diseño Centralizados (`lib/core/design_system/tokens/`)**:
