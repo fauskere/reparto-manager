@@ -108,3 +108,10 @@ Ejecución completa de la Fase 1:
    - **Reactividad Instantánea**: Reconstrucción garantizada con inyección de `ValueKey`.
    - **Pruebas**: 46/46 tests en verde (100% de éxito) y `flutter analyze lib test` con 0 errores y 0 warnings.
    - **Despliegue Web**: Actualizado en `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
+
+9. **Optimización de Nitidez Tipográfica para Monitores de PC**:
+   - **Piso Mínimo**: Ningún texto en toda la app por debajo de 13px (eliminados textos de 9.5px, 10px, 11px y 12px).
+   - **Refuerzo de Trazo (ClearType Optimization)**: Textos chicos utilizan obligatoriamente `FontWeight.w500`, `w600`, `w700` o `w800` (prohibido `w300`/`w400` en textos chicos).
+   - **Espaciado Óptico (`letterSpacing: 0.3`)**: Implementado en todos los componentes atómicos para prevenir empaste de caracteres.
+   - **Tipografía de Sistema**: `Segoe UI` nativo de Windows con hinting impecable y antialiasing ClearType, con fallback a `Inter`, `Roboto` y `sans-serif`.
+   - **Verificación**: 46/46 tests unitarios aprobados y 0 advertencias de linter.

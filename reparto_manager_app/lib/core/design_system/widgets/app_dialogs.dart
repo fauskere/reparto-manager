@@ -274,7 +274,15 @@ class AppReceiptPreviewDialog extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.black),
                 ),
-                ...itemsLines.map((line) => Text(line, style: const TextStyle(color: Colors.black, fontSize: 12))),
+                ...itemsLines.map((line) => Text(
+                      line,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 13.0,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    )),
                 const Text(
                   '--------------------------------',
                   textAlign: TextAlign.center,

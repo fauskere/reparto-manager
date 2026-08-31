@@ -1,3 +1,19 @@
+## 30/08/2026 - Versión V2 (Atomic Design System: Optimización de Nitidez Tipográfica para Monitores de PC)
+- **Qué se hizo**:
+  1. **Calibración de Escala Tipográfica (`AppTypography` & Componentes Atómicos)**:
+     - **Piso Mínimo Estricto**: Ningún texto en toda la app por debajo de 13px (actualizados badges, chips, leyendas, subtítulos y desgloses contables).
+     - **Refuerzo de Trazo (ClearType Optimization)**: Eliminados trazos finos (`w300`/`w400`) en textos chicos sobre fondos oscuros o de color; todos los textos menores a 15px utilizan obligatoriamente `FontWeight.w500`, `FontWeight.w600`, `FontWeight.w700` o `FontWeight.w800`.
+     - **Espaciado Óptico (`letterSpacing: 0.3`)**: Aplicado a todos los textos pequeños y medianos para prevenir empaste de glifos en monitores de PC.
+     - **Tipografía Nativa de Sistema**: `Segoe UI` (fuente nativa de Windows con antialiasing y ClearType perfecto) con fallback a `Inter`, `Roboto` y `sans-serif`.
+  2. **Auditoría Exhaustiva de Componentes Visuales**:
+     - `StatusChip`, `BalanceBadge`, `ProductCard`, `VariantSelectorChips`, `ClientCard`, `PaymentMethodSelector`, `QuickCashCalculator`, `PaymentSummaryBox`, `MetricSummaryCard`, `RankingItemRow`, `AppHeaderFilterBar` y selector de temas del Showroom calibrados con 13px mínimo y trazos nítidos.
+  3. **Pruebas y Verificación**:
+     - `flutter test`: 46/46 tests aprobados (100% verde).
+     - `flutter analyze lib test`: 0 issues found (cero errores, cero warnings).
+     - Despliegue web en canal secundario `dev`: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
+- **Problemas**: Ninguno. Tipografía 100% nítida y sólida sin pixelado ni dientes de sierra.
+- **Pendientes**: Fase 3 (Capa de Infraestructura SQLite y DAOs).
+
 ## 30/08/2026 - Versión V2 (Atomic Design System: 5 Temas Comerciales, Calibración Fina V1 & Roasted Coffee)
 - **Qué se hizo**:
   1. **ThemeManager Singleton & 5 Temas Comerciales (`lib/core/design_system/theme_manager.dart`)**:

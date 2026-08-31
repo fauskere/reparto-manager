@@ -214,15 +214,16 @@ class PaymentMethodSelector extends StatelessWidget {
                 Icon(
                   icon,
                   size: 22,
-                  color: isSelected ? Colors.black : color,
+                  color: isSelected ? AppColors.textOnPrimary : color,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                    color: isSelected ? Colors.black : AppColors.textPrimary,
+                    fontSize: 13.0,
+                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    letterSpacing: 0.3,
+                    color: isSelected ? AppColors.textOnPrimary : AppColors.textPrimary,
                   ),
                 ),
               ],
@@ -279,14 +280,15 @@ class PaymentSummaryBox extends StatelessWidget {
   }
 
   Widget _buildRow(String label, String value,
-      {Color? color, bool isBold = false, double fontSize = 13}) {
+      {Color? color, bool isBold = false, double fontSize = 13.5}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
           style: AppTypography.bodySmall.copyWith(
-            fontWeight: isBold ? FontWeight.w700 : FontWeight.normal,
+            fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
+            letterSpacing: 0.3,
             color: AppColors.textSecondary,
           ),
         ),
@@ -294,7 +296,8 @@ class PaymentSummaryBox extends StatelessWidget {
           value,
           style: TextStyle(
             fontSize: fontSize,
-            fontWeight: isBold ? FontWeight.w900 : FontWeight.bold,
+            fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
+            letterSpacing: 0.3,
             color: color ?? AppColors.textPrimary,
           ),
         ),
@@ -348,8 +351,9 @@ class QuickCashCalculator extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 12.5,
+              fontSize: 13.5,
               fontWeight: FontWeight.w800,
+              letterSpacing: 0.3,
               color: isExact ? AppColors.textOnPrimary : AppColors.primaryYellow,
             ),
           ),

@@ -51,7 +51,8 @@ class ModuleHeader extends StatelessWidget {
                     subtitle!,
                     style: AppTypography.bodySmall.copyWith(
                       color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -116,6 +117,8 @@ class SectionTitle extends StatelessWidget {
                       subtitle!,
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textMuted,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ],

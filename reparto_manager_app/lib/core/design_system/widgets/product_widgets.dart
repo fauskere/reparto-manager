@@ -137,8 +137,9 @@ class ProductCard extends StatelessWidget {
         count <= 0 ? 'Sin stock' : '$count u.',
         style: TextStyle(
           color: badgeColor,
-          fontSize: 11,
+          fontSize: 13.0,
           fontWeight: FontWeight.w800,
+          letterSpacing: 0.3,
         ),
       ),
     );
@@ -156,7 +157,7 @@ class ProductCard extends StatelessWidget {
         cat.toUpperCase(),
         style: TextStyle(
           color: AppColors.textSecondary,
-          fontSize: 9.5,
+          fontSize: 13.0,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.4,
         ),
@@ -307,8 +308,9 @@ class VariantSelectorChips extends StatelessWidget {
           selectedColor: AppColors.primaryYellow,
           backgroundColor: AppColors.surfaceDarkElevated,
           labelStyle: TextStyle(
-            fontSize: 12,
+            fontSize: 13.0,
             fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+            letterSpacing: 0.3,
             color: isSelected ? AppColors.textOnPrimary : AppColors.textPrimary,
           ),
           checkmarkColor: AppColors.textOnPrimary,

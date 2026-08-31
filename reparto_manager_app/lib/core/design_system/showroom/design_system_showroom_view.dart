@@ -128,8 +128,9 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
       label: Text(
         label,
         style: TextStyle(
-          fontSize: 11,
-          fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+          fontSize: 13.0,
+          fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+          letterSpacing: 0.3,
           color: isSelected
               ? ThemeManager.instance.currentPalette.textOnPrimary
               : AppColors.textPrimary,

@@ -117,15 +117,18 @@ class BalanceBadge extends StatelessWidget {
     switch (size) {
       case BalanceBadgeSize.small:
         return AppTypography.bodySmall.copyWith(
-          color: color.withValues(alpha: 0.8),
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
+          color: color.withValues(alpha: 0.9),
+          fontSize: 13.0,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.3,
         );
       case BalanceBadgeSize.medium:
       case BalanceBadgeSize.large:
         return AppTypography.bodySmall.copyWith(
-          color: color.withValues(alpha: 0.8),
-          fontWeight: FontWeight.bold,
+          color: color.withValues(alpha: 0.9),
+          fontSize: 13.5,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.3,
         );
     }
   }

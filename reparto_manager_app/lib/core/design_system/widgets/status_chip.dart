@@ -91,14 +91,15 @@ class StatusChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: isCompact ? 11.0 : 14.0, color: color),
+          Icon(icon, size: isCompact ? 13.0 : 15.0, color: color),
           const SizedBox(width: AppSpacing.xs),
           Text(
             label,
             style: (isCompact ? AppTypography.bodySmall : AppTypography.badge).copyWith(
               color: color,
-              fontSize: isCompact ? 10.5 : 12.0,
+              fontSize: isCompact ? 13.0 : 13.5,
               fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
             ),
           ),
         ],

@@ -193,7 +193,8 @@ class ClientCard extends StatelessWidget {
                 style: AppTypography.badge.copyWith(
                   color: AppColors.textOnPrimary,
                   fontWeight: FontWeight.w900,
-                  fontSize: 11,
+                  fontSize: 13.0,
+                  letterSpacing: 0.3,
                 ),
               ),
             ],

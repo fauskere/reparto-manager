@@ -116,8 +116,9 @@ class AppHeaderFilterBar extends StatelessWidget {
                 child: Text(
                   _periodLabel(p),
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+                    fontSize: 13.0,
+                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    letterSpacing: 0.3,
                     color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
                   ),
                 ),
@@ -162,15 +163,16 @@ class AppHeaderFilterBar extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.calendar_today_rounded,
-                    size: 13,
+                    size: 14,
                     color: isToday ? AppColors.textOnPrimary : AppColors.primaryYellow,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     isToday ? 'HOY ($formattedDate)' : formattedDate.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 13.0,
                       fontWeight: FontWeight.w800,
+                      letterSpacing: 0.3,
                       color: isToday ? AppColors.textOnPrimary : AppColors.textPrimary,
                     ),
                   ),
@@ -233,7 +235,9 @@ class AppHeaderFilterBar extends StatelessWidget {
                 zone,
                 style: TextStyle(
                   color: zone == 'TODAS' ? AppColors.primaryYellow : AppColors.textPrimary,
-                  fontWeight: zone == 'TODAS' ? FontWeight.w800 : FontWeight.normal,
+                  fontWeight: zone == 'TODAS' ? FontWeight.w800 : FontWeight.w600,
+                  letterSpacing: 0.3,
+                  fontSize: 13.5,
                 ),
               ),
             );
@@ -280,9 +284,10 @@ class AppHeaderFilterBar extends StatelessWidget {
               selectedColor: AppColors.primaryYellow,
               backgroundColor: AppColors.backgroundDark,
               labelStyle: TextStyle(
-                fontSize: 11.5,
+                fontSize: 13.0,
                 color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                letterSpacing: 0.3,
               ),
               checkmarkColor: AppColors.textOnPrimary,
               side: BorderSide(

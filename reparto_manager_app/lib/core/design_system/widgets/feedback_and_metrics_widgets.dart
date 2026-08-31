@@ -71,7 +71,12 @@ class MetricSummaryCard extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               subtitle!,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 11),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textMuted,
+                fontSize: 13.0,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.3,
+              ),
             ),
           ],
         ],
@@ -101,19 +106,18 @@ class RankingItemRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'es_AR', symbol: '\$', decimalDigits: 0);
-    final formattedValue = isCurrency ? currency.format(value) : '${value.toInt()} u.';
     final progress = maxValue > 0 ? (value / maxValue).clamp(0.0, 1.0) : 0.0;
+    final formattedValue = isCurrency ? '\$${value.toStringAsFixed(0)}' : '${value.toInt()} u.';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               _buildRankBadge(),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +132,12 @@ class RankingItemRow extends StatelessWidget {
                     if (secondaryInfo != null)
                       Text(
                         secondaryInfo!,
-                        style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 11),
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textMuted,
+                          fontSize: 13.0,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
+                        ),
                       ),
                   ],
                 ),
@@ -187,7 +196,7 @@ class RankingItemRow extends StatelessWidget {
           style: TextStyle(
             color: textColor,
             fontWeight: FontWeight.w900,
-            fontSize: 12,
+            fontSize: 13.0,
           ),
         ),
       ),
