@@ -1,3 +1,26 @@
+## 30/08/2026 - Versión V2 (Fase 3 - Paso 3.1: Base de Datos Local SQLite y Modelos de Datos)
+- **Qué se hizo**:
+  1. **Motor SQLite Multiplataforma y Soporte FFI (`lib/data/database/app_database.dart`)**:
+     - Singleton `AppDatabase` con inicialización transparente en Windows Desktop (FFI), Android/iOS y pruebas unitarias en memoria (`sqfliteFfiInit()`).
+     - Activación de PRAGMA foreign_keys y control de versiones/migraciones.
+  2. **Esquema DDL e Índices Compuestos (`lib/data/database/tables_schema.dart`)**:
+     - 15 tablas creadas con particionado estricto por `tenantId` y precisión bancaria en centavos enteros (`cents: INTEGER NOT NULL`):
+       `clients`, `products`, `price_history`, `sales`, `payments`, `truck_loads`, `ledger_entries`, `ledger_snapshots`, `cash_summaries`, `zones`, `client_groups`, `group_invoices`, `promotions`, `app_settings`, `sync_queue`.
+     - 8 índices compuestos de alto rendimiento para consultas en milisegundos:
+       `idx_clients_tenant_zone`, `idx_clients_tenant_name`, `idx_sales_tenant_date`, `idx_sales_tenant_client`, `idx_payments_tenant_date`, `idx_payments_tenant_client`, `idx_ledger_tenant_client_date`, `idx_sync_tenant_status`.
+  3. **13 Data Models con Mapeo Bidireccional (`lib/data/models/`)**:
+     - `client_model.dart`, `product_model.dart`, `price_history_model.dart`, `sale_model.dart`, `payment_model.dart`, `truck_load_model.dart`, `ledger_entry_model.dart`, `cash_summary_model.dart`, `zone_model.dart`, `client_group_model.dart`, `group_invoice_model.dart`, `promotion_model.dart`, `sync_queue_model.dart`.
+     - Preservación matemática estricta de centavos de `Money` (cero flotantes binarios) y serialización JSON de colecciones/variantes.
+  4. **Batería de Pruebas Unitarias de Persistencia (`test/data/`)**:
+     - `test/data/database/app_database_test.dart`: 5 tests validando 15 tablas, 8 índices, aislamiento multi-tenant y claves compuestas `(tenantId, id)`.
+     - `test/data/models/models_mapping_test.dart`: 8 tests validando mapeo bidireccional exacto de todos los modelos.
+     - **59/59 tests aprobados (100% verde)**.
+  5. **Verificación Estática**:
+     - `flutter analyze`: **0 issues found** (0 errores, 0 warnings).
+     - Todos los archivos respetan el límite modular de < 300 líneas y funciones < 40 líneas.
+- **Problemas**: Ninguno.
+- **Pendientes**: Paso 3.2 de la Fase 3 (Data Access Objects - DAOs para SQLite).
+
 ## 30/08/2026 - Versión V2 (Atomic Design System: Optimización de Nitidez Tipográfica para Monitores de PC)
 - **Qué se hizo**:
   1. **Calibración de Escala Tipográfica (`AppTypography` & Componentes Atómicos)**:
