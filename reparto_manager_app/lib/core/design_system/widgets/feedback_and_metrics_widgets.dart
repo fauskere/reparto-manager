@@ -11,7 +11,7 @@ class MetricSummaryCard extends StatelessWidget {
   final String title;
   final double amount;
   final IconData icon;
-  final Color accentColor;
+  final Color? accentColor;
   final String? subtitle;
   final bool isCurrency;
 
@@ -20,7 +20,7 @@ class MetricSummaryCard extends StatelessWidget {
     required this.title,
     required this.amount,
     required this.icon,
-    this.accentColor = AppColors.primaryYellow,
+    this.accentColor,
     this.subtitle,
     this.isCurrency = true,
   });
@@ -29,6 +29,7 @@ class MetricSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final currency = NumberFormat.currency(locale: 'es_AR', symbol: '\$', decimalDigits: 0);
     final formattedValue = isCurrency ? currency.format(amount) : amount.toInt().toString();
+    final effectiveAccent = accentColor ?? AppColors.primaryYellow;
 
     return AppCard(
       padding: AppSpacing.paddingMd,
@@ -50,10 +51,10 @@ class MetricSummaryCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.15),
+                  color: effectiveAccent.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: accentColor, size: 18),
+                child: Icon(icon, color: effectiveAccent, size: 18),
               ),
             ],
           ),
@@ -61,7 +62,7 @@ class MetricSummaryCard extends StatelessWidget {
           Text(
             formattedValue,
             style: AppTypography.currencyLarge.copyWith(
-              color: accentColor,
+              color: effectiveAccent,
               fontSize: 22,
               fontWeight: FontWeight.w900,
             ),

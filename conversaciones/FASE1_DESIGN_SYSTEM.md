@@ -94,3 +94,16 @@ Ejecución completa de la Fase 1:
    - **Showroom Definitivo (`design_system_showroom_view.dart`)**: 5 pestañas interactivas completas (Estructura, Catálogo & Productos, Filtros, Caja & Cobro, Métricas & Avisos).
    - **Verificación**: `flutter analyze lib` con `No issues found!` (0 errores, 0 warnings).
    - **Despliegue Web dev**: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
+
+8. **Temas Dinámicos en Tiempo Real & Selector Interactivo en Showroom**:
+   - **Arquitectura**: `ThemeManager` singleton (`ChangeNotifier`) con 4 temas comerciales:
+     * **Reparto Gold** (Amarillo #F2C94C, fondo negro #121212, tarjetas #1E1E1E).
+     * **Midnight Blue** (Azul #2563EB, pizarra #1E222B, tarjetas #2A2F3D).
+     * **Sweet Cream** (Rosa #F9A8D4, beige #FAF7F2, tarjetas blancas, textos café #3D312A).
+     * **Emerald Mint** (Verde esmeralda #10B981, grafito #18181B, tarjetas #27272A).
+   - **Cero colores hardcodeados**: Tokens `AppColors` delegados a `ThemeManager.instance.currentPalette`.
+   - **Búsqueda adaptativa**: `AppHeaderFilterBar` adopta automáticamente contraste y colores según el tema.
+   - **Showroom**: Selector superior con chips interactivos para alternar en vivo instantáneamente.
+   - **Modularización**: Cada pestaña modularizada en `tabs/` (< 150 líneas c/u), cumpliendo estrictamente la regla de `< 300 líneas` por archivo y funciones `< 40 líneas`.
+   - **Pruebas**: 4/4 tests en verde (`test/theme_manager_test.dart`) y `flutter analyze lib test` con 0 errores y 0 warnings.
+   - **Despliegue Web**: Actualizado en `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.

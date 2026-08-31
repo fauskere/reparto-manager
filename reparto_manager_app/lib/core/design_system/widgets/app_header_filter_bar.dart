@@ -218,9 +218,9 @@ class AppHeaderFilterBar extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: allOptions.contains(current) ? current : 'TODAS',
-          icon: const Icon(Icons.arrow_drop_down, color: AppColors.primaryYellow),
+          icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryYellow),
           dropdownColor: AppColors.surfaceDarkElevated,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -248,10 +248,13 @@ class AppHeaderFilterBar extends StatelessWidget {
       hintText: 'Buscar por nombre, zona o comprobante...',
       controller: searchController,
       onChanged: onSearchChanged,
-      prefixIcon: const Icon(Icons.search, size: 18),
+      fillColor: AppColors.searchBarBackground,
+      textColor: AppColors.searchBarText,
+      hintColor: AppColors.searchBarPlaceholder,
+      prefixIcon: Icon(Icons.search, size: 18, color: AppColors.searchBarIcon),
       suffixIcon: (searchController?.text.isNotEmpty ?? false)
           ? IconButton(
-              icon: const Icon(Icons.clear, size: 18),
+              icon: Icon(Icons.clear, size: 18, color: AppColors.searchBarIcon),
               onPressed: onClearSearch,
             )
           : null,

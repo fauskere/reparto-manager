@@ -186,7 +186,7 @@ class ClientCard extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.point_of_sale_rounded, size: 14.0, color: AppColors.textOnPrimary),
+              Icon(Icons.point_of_sale_rounded, size: 14.0, color: AppColors.textOnPrimary),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 'POS',

@@ -21,27 +21,22 @@ class RepartoManagerV2App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Reparto Manager V2',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: AppColors.backgroundDark,
-        cardColor: AppColors.surfaceDark,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primaryYellow,
-          secondary: AppColors.primaryYellow,
-          surface: AppColors.surfaceDark,
-          error: AppColors.danger,
-        ),
-      ),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('es', 'ES')],
-      home: const DesignSystemShowroomView(),
+    return ListenableBuilder(
+      listenable: ThemeManager.instance,
+      builder: (context, _) {
+        return MaterialApp(
+          title: 'Reparto Manager V2',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeManager.instance.currentThemeData,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('es', 'ES')],
+          home: const DesignSystemShowroomView(),
+        );
+      },
     );
   }
 }

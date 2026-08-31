@@ -27,7 +27,7 @@ class AppModalDialog extends StatelessWidget {
       backgroundColor: AppColors.surfaceDark,
       shape: RoundedRectangleBorder(
         borderRadius: AppSpacing.borderRadiusXl,
-        side: const BorderSide(color: AppColors.borderCard),
+        side: BorderSide(color: AppColors.borderCard),
       ),
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: ConstrainedBox(
@@ -51,12 +51,12 @@ class AppModalDialog extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
+                    icon: Icon(Icons.close_rounded, color: AppColors.textSecondary),
                     onPressed: onClose ?? () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
-              const Divider(color: AppColors.borderSubtle, height: 16),
+              Divider(color: AppColors.borderSubtle, height: 16),
               Flexible(
                 child: SingleChildScrollView(child: content),
               ),
@@ -174,7 +174,7 @@ class AppSuccessDialog extends StatelessWidget {
               color: AppColors.success.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 64),
+            child: Icon(Icons.check_circle_rounded, color: AppColors.success, size: 64),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(title, style: AppTypography.h3),

@@ -69,7 +69,7 @@ class CartItemRow extends StatelessWidget {
             if (onRemove != null) ...[
               const SizedBox(width: AppSpacing.xs),
               IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: AppColors.danger, size: 20),
+                icon: Icon(Icons.delete_outline_rounded, color: AppColors.danger, size: 20),
                 onPressed: onRemove,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
@@ -105,7 +105,7 @@ class CartItemRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               '$quantity',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 15,
                 color: AppColors.textPrimary,
@@ -259,13 +259,13 @@ class PaymentSummaryBox extends StatelessWidget {
         children: [
           _buildRow('Saldo Anterior:', currency.format(previousBalance),
               color: previousBalance > 0 ? AppColors.danger : AppColors.textSecondary),
-          const Divider(height: 12, color: AppColors.borderSubtle),
+          Divider(height: 12, color: AppColors.borderSubtle),
           _buildRow('Total Venta Actual:', currency.format(saleTotal),
               color: AppColors.primaryYellow, isBold: true),
           const SizedBox(height: 4),
           _buildRow('Monto Abonado:', currency.format(paidAmount),
               color: AppColors.success, isBold: true),
-          const Divider(height: 12, color: AppColors.borderSubtle),
+          Divider(height: 12, color: AppColors.borderSubtle),
           _buildRow(
             'Saldo Final Resultante:',
             currency.format(finalBalance),

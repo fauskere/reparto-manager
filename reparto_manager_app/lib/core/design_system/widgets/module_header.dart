@@ -127,7 +127,7 @@ class SectionTitle extends StatelessWidget {
         ),
         if (showDivider) ...[
           const SizedBox(height: AppSpacing.sm),
-          const Divider(height: 1, color: AppColors.borderSubtle),
+          Divider(height: 1, color: AppColors.borderSubtle),
         ],
       ],
     );

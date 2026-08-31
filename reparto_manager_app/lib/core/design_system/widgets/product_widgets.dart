@@ -111,7 +111,7 @@ class ProductCard extends StatelessWidget {
   Widget _buildPlaceholder() {
     return Container(
       color: AppColors.surfaceDarkElevated,
-      child: const Center(
+      child: Center(
         child: Icon(
           Icons.inventory_2_outlined,
           size: 40,
@@ -154,7 +154,7 @@ class ProductCard extends StatelessWidget {
       ),
       child: Text(
         cat.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textSecondary,
           fontSize: 9.5,
           fontWeight: FontWeight.w700,
@@ -171,7 +171,7 @@ class ProductCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onAdd,
-        child: const SizedBox(
+        child: SizedBox(
           width: 38,
           height: 38,
           child: Icon(
@@ -264,8 +264,8 @@ class ProductListItem extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: InkWell(
               onTap: onAdd,
-              child: const Padding(
-                padding: EdgeInsets.all(6),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
                 child: Icon(
                   Icons.add_rounded,
                   color: AppColors.textOnPrimary,

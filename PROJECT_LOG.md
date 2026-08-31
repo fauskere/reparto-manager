@@ -1,3 +1,30 @@
+## 30/08/2026 - Versión V2 (Atomic Design System: Temas Dinámicos en Tiempo Real & Selector en Showroom)
+- **Qué se hizo**:
+  1. **ThemeManager Singleton & ChangeNotifier (`lib/core/design_system/theme_manager.dart`)**:
+     - 4 temas comerciales profesionales:
+       * **Reparto Gold** (`repartoGold`): Amarillo #F2C94C, fondo negro mate #121212, tarjetas #1E1E1E, textos blancos.
+       * **Midnight Blue** (`midnightBlue`): Azul eléctrico #2563EB, pizarra #1E222B, tarjetas #2A2F3D, detalles #8E9093.
+       * **Sweet Cream** (`sweetCream`): Rosa pastel #F9A8D4 con acento #DB2777, fondo beige #FAF7F2, tarjetas blanco puro, textos café #3D312A.
+       * **Emerald Mint** (`emeraldMint`): Verde esmeralda #10B981, fondo grafito #18181B, tarjetas #27272A, textos claros.
+     - Métodos de cambio de tema y reactividad en tiempo real sin parpadeos vía `ListenableBuilder`.
+  2. **Tokens Semánticos Dinámicos (`lib/core/design_system/tokens/app_colors.dart`)**:
+     - Cero colores hardcodeados; todos los tokens leen dinámicamente de `ThemeManager.instance.currentPalette`.
+     - Barra de búsqueda adaptativa en `AppHeaderFilterBar`:
+       * Reparto Gold: fondo amarillo, lupa negra y placeholder oscuro.
+       * Midnight Blue: fondo slate con lupa y texto en contraste.
+       * Sweet Cream: fondo crema/beige con detalles y lupa en tono café/rosa.
+       * Emerald Mint: detalles y lupa en verde esmeralda sobre fondo grafito.
+  3. **Showroom Modular y Selector en Vivo (`design_system_showroom_view.dart` & `tabs/`)**:
+     - Selector superior con chips interactivos: `[ 🟡 Reparto Gold ] [ 🔵 Midnight Blue ] [ 🌸 Sweet Cream ] [ 🟢 Emerald Mint ]`.
+     - Rediseño modular en 5 pestañas (< 150 líneas c/u): `structure_tab.dart`, `catalog_tab.dart`, `filters_tab.dart`, `checkout_tab.dart`, `metrics_tab.dart`.
+     - Límite estricto de `< 300 líneas` por archivo y funciones `< 40 líneas` cumplido al 100%.
+  4. **Pruebas y Verificación**:
+     - `flutter test test/theme_manager_test.dart`: 4/4 tests aprobados (100% éxito).
+     - `flutter analyze lib test`: 0 issues found (cero errores, cero warnings).
+     - Compilación y despliegue web en canal secundario `dev`: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
+- **Problemas**: Ninguno.
+- **Pendientes**: Fase 3 (Capa de Infraestructura SQLite y DAOs).
+
 ## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.4: Casos de Uso del Dominio Puro - CIERRE DEFINITIVO DE FASE 2)
 - **Qué se hizo**:
   1. **Los 18 Casos de Uso de Negocio Puro (`lib/domain/usecases/`)**:

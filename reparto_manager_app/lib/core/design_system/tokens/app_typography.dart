@@ -35,19 +35,19 @@ class AppTypography {
       );
 
   // Cuerpos de Texto
-  static TextStyle get bodyLarge => const TextStyle(
+  static TextStyle get bodyLarge => TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: AppColors.textPrimary,
       );
 
-  static TextStyle get bodyMedium => const TextStyle(
+  static TextStyle get bodyMedium => TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.normal,
         color: AppColors.textPrimary,
       );
 
-  static TextStyle get bodySmall => const TextStyle(
+  static TextStyle get bodySmall => TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.normal,
         color: AppColors.textSecondary,

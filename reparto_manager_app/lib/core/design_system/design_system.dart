@@ -1,5 +1,6 @@
 // Design System de Reparto-Manager V2
-// Tokens de Diseño
+// Tokens de Diseño & Temas Dinámicos
+export 'theme_manager.dart';
 export 'tokens/app_colors.dart';
 export 'tokens/app_typography.dart';
 export 'tokens/app_spacing.dart';

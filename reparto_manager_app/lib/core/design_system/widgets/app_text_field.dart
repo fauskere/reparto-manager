@@ -5,7 +5,6 @@ import '../tokens/app_spacing.dart';
 import '../tokens/app_typography.dart';
 
 /// Campo de texto tematizado oficial para Reparto-Manager V2.
-/// Ofrece alto contraste, soporte táctil cómodo e indicación visual clara de foco.
 class AppTextField extends StatelessWidget {
   final String? label;
   final String? hintText;
@@ -24,6 +23,13 @@ class AppTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final EdgeInsets? contentPadding;
+  final Color? fillColor;
+  final Color? textColor;
+  final Color? hintColor;
+  final Color? prefixIconColor;
+  final Color? suffixIconColor;
+  final Color? borderColor;
+  final Color? focusedBorderColor;
 
   const AppTextField({
     super.key,
@@ -44,10 +50,23 @@ class AppTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.contentPadding,
+    this.fillColor,
+    this.textColor,
+    this.hintColor,
+    this.prefixIconColor,
+    this.suffixIconColor,
+    this.borderColor,
+    this.focusedBorderColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveFill = fillColor ?? (enabled ? AppColors.surfaceDark : AppColors.surfaceDarkElevated);
+    final effectiveText = textColor ?? (enabled ? AppColors.textPrimary : AppColors.textMuted);
+    final effectiveHint = hintColor ?? AppColors.textMuted;
+    final effectiveBorder = borderColor ?? AppColors.borderSubtle;
+    final effectiveFocusedBorder = focusedBorderColor ?? AppColors.primaryYellow;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -75,29 +94,22 @@ class AppTextField extends StatelessWidget {
           autofocus: autofocus,
           readOnly: readOnly,
           maxLines: maxLines,
-          style: AppTypography.bodyLarge.copyWith(
-            color: enabled ? AppColors.textPrimary : AppColors.textMuted,
-          ),
-          cursorColor: AppColors.primaryYellow,
+          style: AppTypography.bodyLarge.copyWith(color: effectiveText),
+          cursorColor: effectiveFocusedBorder,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textMuted,
-            ),
+            hintStyle: AppTypography.bodyMedium.copyWith(color: effectiveHint),
             filled: true,
-            fillColor: enabled ? AppColors.surfaceDark : AppColors.surfaceDarkElevated,
+            fillColor: effectiveFill,
             contentPadding: contentPadding ??
-                const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                  vertical: AppSpacing.md,
-                ),
+                const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
-            prefixIconColor: AppColors.textSecondary,
-            suffixIconColor: AppColors.textSecondary,
-            border: _buildBorder(AppColors.borderSubtle),
-            enabledBorder: _buildBorder(AppColors.borderSubtle),
-            focusedBorder: _buildBorder(AppColors.primaryYellow, width: 2.0),
+            prefixIconColor: prefixIconColor ?? AppColors.textSecondary,
+            suffixIconColor: suffixIconColor ?? AppColors.textSecondary,
+            border: _buildBorder(effectiveBorder),
+            enabledBorder: _buildBorder(effectiveBorder),
+            focusedBorder: _buildBorder(effectiveFocusedBorder, width: 2.0),
             errorBorder: _buildBorder(AppColors.danger),
             focusedErrorBorder: _buildBorder(AppColors.danger, width: 2.0),
             disabledBorder: _buildBorder(Colors.transparent),
