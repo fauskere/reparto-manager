@@ -49,7 +49,7 @@ class ShowroomStructureTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              const SectionTitle(
+              SectionTitle(
                 title: 'Historial de Saldo y Comprobantes',
                 subtitle: 'Eventos contables inmutables de los últimos 60 días',
               ),

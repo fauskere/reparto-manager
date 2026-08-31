@@ -36,7 +36,7 @@ class ShowroomMetricsTab extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
         Text('Top 5 Productos Más Vendidos (RankingItemRow)', style: AppTypography.h3),
         const SizedBox(height: AppSpacing.sm),
-        const AppCard(
+        AppCard(
           child: Column(
             children: [
               RankingItemRow(

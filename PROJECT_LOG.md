@@ -14,15 +14,17 @@
        * Midnight Blue: fondo slate con lupa y texto en contraste.
        * Sweet Cream: fondo crema/beige con detalles y lupa en tono café/rosa.
        * Emerald Mint: detalles y lupa en verde esmeralda sobre fondo grafito.
-  3. **Showroom Modular y Selector en Vivo (`design_system_showroom_view.dart` & `tabs/`)**:
-     - Selector superior con chips interactivos: `[ 🟡 Reparto Gold ] [ 🔵 Midnight Blue ] [ 🌸 Sweet Cream ] [ 🟢 Emerald Mint ]`.
-     - Rediseño modular en 5 pestañas (< 150 líneas c/u): `structure_tab.dart`, `catalog_tab.dart`, `filters_tab.dart`, `checkout_tab.dart`, `metrics_tab.dart`.
-     - Límite estricto de `< 300 líneas` por archivo y funciones `< 40 líneas` cumplido al 100%.
-  4. **Pruebas y Verificación**:
-     - `flutter test test/theme_manager_test.dart`: 4/4 tests aprobados (100% éxito).
+  3. **Showroom Modular, Reactividad Instantánea y Selector Calibrado**:
+     - Eliminación de subwidgets y listas estáticas `const` en `design_system_showroom_view.dart` y `tabs/`.
+     - Inyección de `ValueKey('showroom_${current.name}')` en `Scaffold` y claves de tema por pestaña para repintado 100% instantáneo en caliente.
+     - Contraste perfecto en selector de temas: texto dinámico `textOnPrimary` (blanco nítido en Midnight Blue, Emerald Mint y Sweet Cream; negro mate en Reparto Gold).
+     - Calibración de **Sweet Cream**: fondo beige arena `#ECE5D8`, tarjetas `#FFFFFF`, textos `#1F1916` y primario frambuesa suave `#EC4899`.
+     - Preservación del primario histórico de **Reparto Gold**: `#F2C94C` con texto `#000000`.
+  4. **Pruebas y Verificación Total**:
+     - `flutter test`: 45/45 tests aprobados (100% verde en dominio y temas).
      - `flutter analyze lib test`: 0 issues found (cero errores, cero warnings).
-     - Compilación y despliegue web en canal secundario `dev`: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
-- **Problemas**: Ninguno.
+     - Despliegue web en canal secundario `dev`: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
+- **Problemas**: Ninguno. 100% calibrado y reactivo.
 - **Pendientes**: Fase 3 (Capa de Infraestructura SQLite y DAOs).
 
 ## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.4: Casos de Uso del Dominio Puro - CIERRE DEFINITIVO DE FASE 2)

@@ -36,7 +36,10 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
     return ListenableBuilder(
       listenable: ThemeManager.instance,
       builder: (context, _) {
+        final current = ThemeManager.instance.currentType;
+
         return Scaffold(
+          key: ValueKey('showroom_${current.name}'),
           backgroundColor: AppColors.backgroundDark,
           appBar: AppBar(
             backgroundColor: AppColors.backgroundDark,
@@ -66,12 +69,12 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
           ),
           body: TabBarView(
             controller: _tabController,
-            children: const [
-              ShowroomStructureTab(),
-              ShowroomCatalogTab(),
-              ShowroomFiltersTab(),
-              ShowroomCheckoutTab(),
-              ShowroomMetricsTab(),
+            children: [
+              ShowroomStructureTab(key: ValueKey('struct_${current.name}')),
+              ShowroomCatalogTab(key: ValueKey('cat_${current.name}')),
+              ShowroomFiltersTab(key: ValueKey('filt_${current.name}')),
+              ShowroomCheckoutTab(key: ValueKey('check_${current.name}')),
+              ShowroomMetricsTab(key: ValueKey('met_${current.name}')),
             ],
           ),
         );
@@ -125,7 +128,9 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
         style: TextStyle(
           fontSize: 11,
           fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-          color: isSelected ? Colors.black : AppColors.textPrimary,
+          color: isSelected
+              ? ThemeManager.instance.currentPalette.textOnPrimary
+              : AppColors.textPrimary,
         ),
       ),
       backgroundColor: isSelected ? AppColors.primaryYellow : AppColors.surfaceDarkElevated,

@@ -45,11 +45,11 @@ void main() {
       expect(tm.currentType, equals(AppThemeType.sweetCream));
       expect(tm.currentPalette.name, equals('Sweet Cream'));
       expect(tm.currentPalette.isDark, isFalse);
-      expect(tm.currentPalette.primary, equals(const Color(0xFFF9A8D4)));
-      expect(tm.currentPalette.background, equals(const Color(0xFFFAF7F2)));
+      expect(tm.currentPalette.primary, equals(const Color(0xFFEC4899)));
+      expect(tm.currentPalette.background, equals(const Color(0xFFECE5D8)));
       expect(tm.currentPalette.surface, equals(const Color(0xFFFFFFFF)));
-      expect(tm.currentPalette.textPrimary, equals(const Color(0xFF3D312A)));
-      expect(AppColors.textPrimary, equals(const Color(0xFF3D312A)));
+      expect(tm.currentPalette.textPrimary, equals(const Color(0xFF1F1916)));
+      expect(AppColors.textPrimary, equals(const Color(0xFF1F1916)));
     });
 
     test('4. Cambio a Emerald Mint actualiza a verde esmeralda y grafito', () {
