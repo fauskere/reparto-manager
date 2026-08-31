@@ -45,12 +45,19 @@ class AppDatabase {
       path = await _resolveDatabasePath();
     }
 
-    return await openDatabase(
+    _database = await openDatabase(
       path,
       version: TablesSchema.databaseVersion,
       onCreate: _onCreate,
       onConfigure: _onConfigure,
     );
+    return _database!;
+  }
+
+  /// Permite fijar una base de datos abierta para pruebas unitarias.
+  @visibleForTesting
+  static void setTestDatabase(Database? db) {
+    _database = db;
   }
 
   /// Configura FFI para plataformas Desktop (Windows, Linux, macOS) o pruebas de consola.

@@ -42,3 +42,9 @@ class BalanceCalculationFailure extends DomainFailure {
 class EntityValidationFailure extends DomainFailure {
   const EntityValidationFailure(super.message, [super.details]);
 }
+
+/// Fallo originado por operaciones de persistencia o base de datos local SQLite.
+class DatabaseFailure extends DomainFailure {
+  const DatabaseFailure(super.message, [super.details]);
+}
+
