@@ -110,6 +110,8 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
                   _themeChip('🌸 Sweet Cream', AppThemeType.sweetCream, current),
                   const SizedBox(width: 6),
                   _themeChip('🟢 Emerald Mint', AppThemeType.emeraldMint, current),
+                  const SizedBox(width: 6),
+                  _themeChip('☕ Roasted Coffee', AppThemeType.roastedCoffee, current),
                 ],
               ),
             ),

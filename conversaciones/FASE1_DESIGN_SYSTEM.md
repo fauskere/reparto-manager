@@ -95,15 +95,16 @@ Ejecución completa de la Fase 1:
    - **Verificación**: `flutter analyze lib` con `No issues found!` (0 errores, 0 warnings).
    - **Despliegue Web dev**: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
 
-8. **Temas Dinámicos en Tiempo Real & Selector Interactivo en Showroom**:
-   - **Arquitectura**: `ThemeManager` singleton (`ChangeNotifier`) con 4 temas comerciales:
-     * **Reparto Gold** (Amarillo #F2C94C, fondo negro #121212, tarjetas #1E1E1E).
-     * **Midnight Blue** (Azul #2563EB, pizarra #1E222B, tarjetas #2A2F3D).
-     * **Sweet Cream** (Rosa #F9A8D4, beige #FAF7F2, tarjetas blancas, textos café #3D312A).
-     * **Emerald Mint** (Verde esmeralda #10B981, grafito #18181B, tarjetas #27272A).
+8. **Temas Dinámicos en Tiempo Real, 5 Temas Comerciales & Selector Showroom**:
+   - **Arquitectura**: `ThemeManager` singleton (`ChangeNotifier`) con 5 temas comerciales:
+     * **Reparto Gold** (V1 Exacta): Amarillo María Belén `#FFEB3B` estricto, fondo `#212121`, tarjetas `#2C2C2C`, textos secundarios `#AAAAAA`.
+     * **Midnight Blue**: Azul `#2563EB`, pizarra `#1E222B`, tarjetas `#2A2F3D`.
+     * **Sweet Cream** (Cohesión Visual): Rosa `#EC4899`, beige arena `#ECE5D8`, tarjetas blancas, textos `#1F1916`, botones de acento/danger con texto crema suave `#FAF7F2` (nunca negro).
+     * **Emerald Mint**: Verde esmeralda `#10B981`, grafito `#18181B`, tarjetas `#27272A`.
+     * **Roasted Coffee** (5° Tema): Especialidad en cafeterías/panaderías. Primario caramelo tostado `#C48B58` con texto crema latte `#FDF8F2`, fondo café tostado `#1F1916`, tarjetas `#2D2420` y bordes `#4A3B32`.
    - **Cero colores hardcodeados**: Tokens `AppColors` delegados a `ThemeManager.instance.currentPalette`.
    - **Búsqueda adaptativa**: `AppHeaderFilterBar` adopta automáticamente contraste y colores según el tema.
-   - **Showroom**: Selector superior con chips interactivos para alternar en vivo instantáneamente.
-   - **Modularización**: Cada pestaña modularizada en `tabs/` (< 150 líneas c/u), cumpliendo estrictamente la regla de `< 300 líneas` por archivo y funciones `< 40 líneas`.
-   - **Pruebas**: 4/4 tests en verde (`test/theme_manager_test.dart`) y `flutter analyze lib test` con 0 errores y 0 warnings.
+   - **Showroom**: Selector superior con 5 chips interactivos (`[ 🟡 Reparto Gold ] [ 🔵 Midnight Blue ] [ 🌸 Sweet Cream ] [ 🟢 Emerald Mint ] [ ☕ Roasted Coffee ]`).
+   - **Reactividad Instantánea**: Reconstrucción garantizada con inyección de `ValueKey`.
+   - **Pruebas**: 46/46 tests en verde (100% de éxito) y `flutter analyze lib test` con 0 errores y 0 warnings.
    - **Despliegue Web**: Actualizado en `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.

@@ -5,6 +5,7 @@ enum AppThemeType {
   midnightBlue,
   sweetCream,
   emeraldMint,
+  roastedCoffee,
 }
 
 /// Paleta completa de colores semánticos para un tema.
@@ -14,6 +15,7 @@ class AppThemePalette {
   final bool isDark;
   final Color primary;
   final Color textOnPrimary;
+  final Color textOnDanger;
   final Color background;
   final Color surface;
   final Color surfaceElevated;
@@ -37,6 +39,7 @@ class AppThemePalette {
     required this.isDark,
     required this.primary,
     required this.textOnPrimary,
+    required this.textOnDanger,
     required this.background,
     required this.surface,
     required this.surfaceElevated,
@@ -59,17 +62,18 @@ class AppThemePalette {
     name: 'Reparto Gold',
     type: AppThemeType.repartoGold,
     isDark: true,
-    primary: Color(0xFFF2C94C),
+    primary: Color(0xFFFFEB3B),
     textOnPrimary: Color(0xFF000000),
-    background: Color(0xFF121212),
-    surface: Color(0xFF1E1E1E),
-    surfaceElevated: Color(0xFF2A2A2A),
+    textOnDanger: Color(0xFFFFFFFF),
+    background: Color(0xFF212121),
+    surface: Color(0xFF2C2C2C),
+    surfaceElevated: Color(0xFF383838),
     textPrimary: Color(0xFFFFFFFF),
-    textSecondary: Color(0xFFA0A0A0),
-    textMuted: Color(0xFF707070),
-    borderSubtle: Color(0x33A0A0A0),
-    borderCard: Color(0x33F2C94C),
-    searchBarBackground: Color(0xFFF2C94C),
+    textSecondary: Color(0xFFAAAAAA),
+    textMuted: Color(0xFF757575),
+    borderSubtle: Color(0x33AAAAAA),
+    borderCard: Color(0x33FFEB3B),
+    searchBarBackground: Color(0xFFFFEB3B),
     searchBarIcon: Color(0xFF000000),
     searchBarPlaceholder: Color(0xFF424242),
     searchBarText: Color(0xFF000000),
@@ -85,6 +89,7 @@ class AppThemePalette {
     isDark: true,
     primary: Color(0xFF2563EB),
     textOnPrimary: Color(0xFFFFFFFF),
+    textOnDanger: Color(0xFFFFFFFF),
     background: Color(0xFF1E222B),
     surface: Color(0xFF2A2F3D),
     surfaceElevated: Color(0xFF353B4D),
@@ -108,7 +113,8 @@ class AppThemePalette {
     type: AppThemeType.sweetCream,
     isDark: false,
     primary: Color(0xFFEC4899),
-    textOnPrimary: Color(0xFFFFFFFF),
+    textOnPrimary: Color(0xFFFAF7F2),
+    textOnDanger: Color(0xFFFAF7F2),
     background: Color(0xFFECE5D8),
     surface: Color(0xFFFFFFFF),
     surfaceElevated: Color(0xFFF7F2EA),
@@ -133,6 +139,7 @@ class AppThemePalette {
     isDark: true,
     primary: Color(0xFF10B981),
     textOnPrimary: Color(0xFFFFFFFF),
+    textOnDanger: Color(0xFFFFFFFF),
     background: Color(0xFF18181B),
     surface: Color(0xFF27272A),
     surfaceElevated: Color(0xFF3F3F46),
@@ -149,6 +156,31 @@ class AppThemePalette {
     danger: Color(0xFFEF4444),
     warning: Color(0xFFF59E0B),
     info: Color(0xFF06B6D4),
+  );
+
+  static const roastedCoffee = AppThemePalette(
+    name: 'Roasted Coffee',
+    type: AppThemeType.roastedCoffee,
+    isDark: true,
+    primary: Color(0xFFC48B58),
+    textOnPrimary: Color(0xFFFDF8F2),
+    textOnDanger: Color(0xFFFDF8F2),
+    background: Color(0xFF1F1916),
+    surface: Color(0xFF2D2420),
+    surfaceElevated: Color(0xFF3B2F2A),
+    textPrimary: Color(0xFFFDF8F2),
+    textSecondary: Color(0xFFCBB8A9),
+    textMuted: Color(0xFF9E897A),
+    borderSubtle: Color(0x334A3B32),
+    borderCard: Color(0xFF4A3B32),
+    searchBarBackground: Color(0xFF2D2420),
+    searchBarIcon: Color(0xFFC48B58),
+    searchBarPlaceholder: Color(0xFFCBB8A9),
+    searchBarText: Color(0xFFFDF8F2),
+    success: Color(0xFF10B981),
+    danger: Color(0xFFEF4444),
+    warning: Color(0xFFF59E0B),
+    info: Color(0xFF3B82F6),
   );
 }
 
@@ -167,6 +199,7 @@ class ThemeManager extends ChangeNotifier {
     AppThemeType.midnightBlue: AppThemePalette.midnightBlue,
     AppThemeType.sweetCream: AppThemePalette.sweetCream,
     AppThemeType.emeraldMint: AppThemePalette.emeraldMint,
+    AppThemeType.roastedCoffee: AppThemePalette.roastedCoffee,
   };
 
   AppThemePalette get currentPalette => _palettes[_currentType]!;

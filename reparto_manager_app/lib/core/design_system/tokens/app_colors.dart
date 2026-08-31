@@ -24,6 +24,7 @@ class AppColors {
   static Color get textSecondary => _p.textSecondary;
   static Color get textMuted => _p.textMuted;
   static Color get textOnPrimary => _p.textOnPrimary;
+  static Color get textOnDanger => _p.textOnDanger;
 
   // Bordes Dinámicos
   static Color get borderSubtle => _p.borderSubtle;

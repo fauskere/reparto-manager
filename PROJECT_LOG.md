@@ -1,30 +1,23 @@
-## 30/08/2026 - Versión V2 (Atomic Design System: Temas Dinámicos en Tiempo Real & Selector en Showroom)
+## 30/08/2026 - Versión V2 (Atomic Design System: 5 Temas Comerciales, Calibración Fina V1 & Roasted Coffee)
 - **Qué se hizo**:
-  1. **ThemeManager Singleton & ChangeNotifier (`lib/core/design_system/theme_manager.dart`)**:
-     - 4 temas comerciales profesionales:
-       * **Reparto Gold** (`repartoGold`): Amarillo #F2C94C, fondo negro mate #121212, tarjetas #1E1E1E, textos blancos.
-       * **Midnight Blue** (`midnightBlue`): Azul eléctrico #2563EB, pizarra #1E222B, tarjetas #2A2F3D, detalles #8E9093.
-       * **Sweet Cream** (`sweetCream`): Rosa pastel #F9A8D4 con acento #DB2777, fondo beige #FAF7F2, tarjetas blanco puro, textos café #3D312A.
-       * **Emerald Mint** (`emeraldMint`): Verde esmeralda #10B981, fondo grafito #18181B, tarjetas #27272A, textos claros.
-     - Métodos de cambio de tema y reactividad en tiempo real sin parpadeos vía `ListenableBuilder`.
-  2. **Tokens Semánticos Dinámicos (`lib/core/design_system/tokens/app_colors.dart`)**:
-     - Cero colores hardcodeados; todos los tokens leen dinámicamente de `ThemeManager.instance.currentPalette`.
-     - Barra de búsqueda adaptativa en `AppHeaderFilterBar`:
-       * Reparto Gold: fondo amarillo, lupa negra y placeholder oscuro.
-       * Midnight Blue: fondo slate con lupa y texto en contraste.
-       * Sweet Cream: fondo crema/beige con detalles y lupa en tono café/rosa.
-       * Emerald Mint: detalles y lupa en verde esmeralda sobre fondo grafito.
-  3. **Showroom Modular, Reactividad Instantánea y Selector Calibrado**:
-     - Eliminación de subwidgets y listas estáticas `const` en `design_system_showroom_view.dart` y `tabs/`.
-     - Inyección de `ValueKey('showroom_${current.name}')` en `Scaffold` y claves de tema por pestaña para repintado 100% instantáneo en caliente.
-     - Contraste perfecto en selector de temas: texto dinámico `textOnPrimary` (blanco nítido en Midnight Blue, Emerald Mint y Sweet Cream; negro mate en Reparto Gold).
-     - Calibración de **Sweet Cream**: fondo beige arena `#ECE5D8`, tarjetas `#FFFFFF`, textos `#1F1916` y primario frambuesa suave `#EC4899`.
-     - Preservación del primario histórico de **Reparto Gold**: `#F2C94C` con texto `#000000`.
+  1. **ThemeManager Singleton & 5 Temas Comerciales (`lib/core/design_system/theme_manager.dart`)**:
+     - **Reparto Gold** (Identidad Original V1 Exacta): Amarillo María Belén `#FFEB3B` estricto, fondo gris oscuro `#212121`, tarjetas `#2C2C2C`, textos secundarios `#AAAAAA`, texto sobre primario `#000000`.
+     - **Midnight Blue**: Azul eléctrico `#2563EB`, pizarra `#1E222B`, tarjetas `#2A2F3D`, detalles `#8E9093`.
+     - **Sweet Cream** (Cohesión Visual Boutique): Rosa frambuesa suave `#EC4899`, fondo beige arena `#ECE5D8`, tarjetas `#FFFFFF`, textos café oscuro `#1F1916`. Regla de cohesión: botones de acento/danger usan texto crema cálido `#FAF7F2` (nunca negro ni blanco frío).
+     - **Emerald Mint**: Verde esmeralda vivo `#10B981`, fondo grafito `#18181B`, tarjetas `#27272A`.
+     - **Roasted Coffee** (Nuevo 5° Tema): Especialidad en cafeterías/panaderías. Primario tono canela/caramelo tostado `#C48B58` con texto crema latte `#FDF8F2`, fondo marrón café tostado profundo `#1F1916`, tarjetas `#2D2420` con bordes suaves `#4A3B32`, textos secundarios `#CBB8A9`.
+  2. **Tokens Semánticos y Botones**:
+     - Introducido `textOnDanger` en `AppThemePalette` y `AppColors`, consumido por `AppButton` para garantizar contraste y cohesión visual.
+     - Barra de búsqueda adaptativa configurada para los 5 temas.
+  3. **Showroom Modular y Selector de 5 Temas**:
+     - Selector superior con 5 chips táctiles interactivos:
+       `[ 🟡 Reparto Gold ] [ 🔵 Midnight Blue ] [ 🌸 Sweet Cream ] [ 🟢 Emerald Mint ] [ ☕ Roasted Coffee ]`.
+     - Reactividad instantánea en caliente (0 ms) mediante `ValueKey` y reconstrucción integral.
   4. **Pruebas y Verificación Total**:
-     - `flutter test`: 45/45 tests aprobados (100% verde en dominio y temas).
+     - `flutter test`: 46/46 tests aprobados (100% verde en dominio y 5 temas).
      - `flutter analyze lib test`: 0 issues found (cero errores, cero warnings).
      - Despliegue web en canal secundario `dev`: `https://reparto-manager-fb5c2--dev-usamdp3u.web.app`.
-- **Problemas**: Ninguno. 100% calibrado y reactivo.
+- **Problemas**: Ninguno. 100% verificado y calibrado.
 - **Pendientes**: Fase 3 (Capa de Infraestructura SQLite y DAOs).
 
 ## 30/08/2026 - Versión V2 (Fase 2 - Paso 2.4: Casos de Uso del Dominio Puro - CIERRE DEFINITIVO DE FASE 2)

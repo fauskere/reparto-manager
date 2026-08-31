@@ -6,18 +6,21 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('ThemeManager - Pruebas Unitarias de Temas Dinámicos', () {
-    test('1. Tema por defecto debe ser Reparto Gold', () {
+    test('1. Tema por defecto debe ser Reparto Gold con valores exactos de V1', () {
       final tm = ThemeManager.instance;
       tm.setTheme(AppThemeType.repartoGold);
 
       expect(tm.currentType, equals(AppThemeType.repartoGold));
       expect(tm.currentPalette.name, equals('Reparto Gold'));
-      expect(tm.currentPalette.primary, equals(const Color(0xFFF2C94C)));
-      expect(tm.currentPalette.background, equals(const Color(0xFF121212)));
-      expect(tm.currentPalette.surface, equals(const Color(0xFF1E1E1E)));
-      expect(tm.currentPalette.searchBarBackground, equals(const Color(0xFFF2C94C)));
+      expect(tm.currentPalette.primary, equals(const Color(0xFFFFEB3B)));
+      expect(tm.currentPalette.background, equals(const Color(0xFF212121)));
+      expect(tm.currentPalette.surface, equals(const Color(0xFF2C2C2C)));
+      expect(tm.currentPalette.textSecondary, equals(const Color(0xFFAAAAAA)));
+      expect(tm.currentPalette.textOnPrimary, equals(const Color(0xFF000000)));
+      expect(tm.currentPalette.searchBarBackground, equals(const Color(0xFFFFEB3B)));
       expect(tm.currentPalette.searchBarIcon, equals(const Color(0xFF000000)));
-      expect(AppColors.primaryYellow, equals(const Color(0xFFF2C94C)));
+      expect(AppColors.primaryYellow, equals(const Color(0xFFFFEB3B)));
+      expect(AppColors.backgroundDark, equals(const Color(0xFF212121)));
     });
 
     test('2. Cambio a Midnight Blue notifica y actualiza tokens', () {
@@ -38,7 +41,7 @@ void main() {
       expect(AppColors.primaryYellow, equals(const Color(0xFF2563EB)));
     });
 
-    test('3. Cambio a Sweet Cream actualiza a tema claro/pastel', () {
+    test('3. Cambio a Sweet Cream actualiza a tema claro con texto crema en botones', () {
       final tm = ThemeManager.instance;
       tm.setTheme(AppThemeType.sweetCream);
 
@@ -49,7 +52,10 @@ void main() {
       expect(tm.currentPalette.background, equals(const Color(0xFFECE5D8)));
       expect(tm.currentPalette.surface, equals(const Color(0xFFFFFFFF)));
       expect(tm.currentPalette.textPrimary, equals(const Color(0xFF1F1916)));
+      expect(tm.currentPalette.textOnDanger, equals(const Color(0xFFFAF7F2)));
+      expect(tm.currentPalette.textOnPrimary, equals(const Color(0xFFFAF7F2)));
       expect(AppColors.textPrimary, equals(const Color(0xFF1F1916)));
+      expect(AppColors.textOnDanger, equals(const Color(0xFFFAF7F2)));
     });
 
     test('4. Cambio a Emerald Mint actualiza a verde esmeralda y grafito', () {
@@ -63,6 +69,23 @@ void main() {
       expect(tm.currentPalette.background, equals(const Color(0xFF18181B)));
       expect(tm.currentPalette.surface, equals(const Color(0xFF27272A)));
       expect(AppColors.primaryYellow, equals(const Color(0xFF10B981)));
+    });
+
+    test('5. Cambio a Roasted Coffee actualiza a tonos caramelo y espresso', () {
+      final tm = ThemeManager.instance;
+      tm.setTheme(AppThemeType.roastedCoffee);
+
+      expect(tm.currentType, equals(AppThemeType.roastedCoffee));
+      expect(tm.currentPalette.name, equals('Roasted Coffee'));
+      expect(tm.currentPalette.isDark, isTrue);
+      expect(tm.currentPalette.primary, equals(const Color(0xFFC48B58)));
+      expect(tm.currentPalette.background, equals(const Color(0xFF1F1916)));
+      expect(tm.currentPalette.surface, equals(const Color(0xFF2D2420)));
+      expect(tm.currentPalette.textPrimary, equals(const Color(0xFFFDF8F2)));
+      expect(tm.currentPalette.textSecondary, equals(const Color(0xFFCBB8A9)));
+      expect(tm.currentPalette.textOnDanger, equals(const Color(0xFFFDF8F2)));
+      expect(AppColors.primaryYellow, equals(const Color(0xFFC48B58)));
+      expect(AppColors.textPrimary, equals(const Color(0xFFFDF8F2)));
     });
   });
 }

@@ -188,7 +188,7 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.ghost:
         return AppColors.primaryYellow;
       case AppButtonVariant.danger:
-        return AppColors.textPrimary;
+        return AppColors.textOnDanger;
     }
   }
 
