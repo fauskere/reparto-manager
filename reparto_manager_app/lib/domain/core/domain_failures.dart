@@ -48,3 +48,8 @@ class DatabaseFailure extends DomainFailure {
   const DatabaseFailure(super.message, [super.details]);
 }
 
+/// Fallo originado por autenticación, permisos o gestión de sesiones.
+class AuthFailure extends DomainFailure {
+  const AuthFailure(super.message, [super.details]);
+}
+

@@ -1,3 +1,24 @@
+## 02/09/2026 - Versión V2 (Fase 4 - Paso 4.0: Autenticación Firebase Auth, RBAC y Pantalla de Login)
+- **Qué se hizo**:
+  1. **Dependencias y Autenticación Oficial (`pubspec.yaml`)**:
+     - Integrado `firebase_auth: ^6.1.4` bajo `$env:PUB_CACHE="C:\Reparto-Manager-DEV\.pub-cache"`.
+  2. **Capa RBAC, Sesión Multi-Tenant y Gestor de Acceso (`lib/presentation/auth/`)**:
+     - `user_role.dart`: Enum `UserRole` (`superadmin`, `owner`, `driver`, `cashier`) con deserialización tolerante.
+     - `user_session.dart`: Modelo inmutable `UserSession` (`tenantId`, `userId`, `email`, `businessName`, `role`) con validaciones de privilegios (`isSuperAdmin`, `isOwner`, `isDriver`, `isCashier`, `canManageUsers`, `canInviteTenants`).
+     - `auth_gateway.dart`: Contrato `IAuthGateway` e implementación `FirebaseAuthGateway` con inicialización perezosa, normalización automática del alias `admin` a `admin@mariabelen.com`, resolución de datos en Firestore (`v2_users/{userId}`) y mapeo amigable de errores en español.
+     - `session_manager.dart`: Singleton `SessionManager` con soporte offline inmediato desde `SharedPreferences`, control de estados reactivos (`unauthenticated`, `authenticating`, `authenticated`), cierre de sesión completo y regla de seguridad estricta: solo `superadmin` puede emitir invitaciones corporativas.
+  3. **Pantalla de Inicio de Sesión y Diálogo Modal (`lib/presentation/auth/`)**:
+     - `login_view.dart`: UI responsive 100% construida a partir de los componentes atómicos del Design System (`AppCard`, `AppTextField`, `AppButton`, `AppColors`, `AppTypography`), teclado nativo por tipo de dato, visibilidad de contraseña, checkbox "Recordar sesión" y pie con versión.
+     - `widgets/forgot_password_dialog.dart`: Diálogo modal estándar para activación o restablecimiento seguro de clave por correo electrónico.
+  4. **Enrutador Reactivo Inicial (`lib/main.dart`)**:
+     - Arranque con `SessionManager.instance.initialize()` y alternancia automática entre `LoginView` y `DesignSystemShowroomView` reactiva a cambios de sesión y tema.
+  5. **Batería de Pruebas Unitarias (`test/presentation/auth/`)**:
+     - `session_manager_test.dart`: 8 pruebas unitarias validando arranque sin sesión, restauración offline desde `SharedPreferences`, login con alias admin, captura de fallos, reseteo propio, rechazo de invitaciones sin superadmin, emisión de invitaciones por superadmin y logout.
+     - **92/92 tests aprobados (100% verde)** en todo el proyecto.
+     - `flutter analyze`: **0 issues found** (cero errores, cero warnings).
+- **Problemas**: Ninguno.
+- **Pendientes**: Paso 4.1 de la Fase 4 (Shell de Navegación, App Drawer con Perfiles y Vista de POS / Reparto).
+
 ## 02/09/2026 - Versión V2 (Fase 3 - Paso 3.3: Motor de Sincronización Bidireccional Offline-First Completo - CIERRE DEFINITIVO DE FASE 3)
 - **Qué se hizo**:
   1. **Arquitectura del Motor de Sincronización en la Nube (`lib/data/sync/`)**:
