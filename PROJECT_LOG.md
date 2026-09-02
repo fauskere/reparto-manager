@@ -1,3 +1,23 @@
+## 02/09/2026 - Versión V2 (Fase 3 - Paso 3.3: Motor de Sincronización Bidireccional Offline-First Completo - CIERRE DEFINITIVO DE FASE 3)
+- **Qué se hizo**:
+  1. **Arquitectura del Motor de Sincronización en la Nube (`lib/data/sync/`)**:
+     - `SyncStatus` & `SyncResult`: Estados inmutables (`idle`, `syncing`, `offline`, `error`), métricas tipadas de subida/bajada y notificador reactivo global `syncStatusNotifier` para la UI.
+     - `SyncLock`: Candado Mutex de exclusión mutua estricta para evitar condiciones de carrera y gestor de reintentos con backoff exponencial (5s, 15s, 30s) ante fluctuaciones de hotspot.
+     - `ICloudGateway` & `FirestoreCloudGateway`: Aislamiento multi-tenant estricto bajo `v2_tenants/{tenantId}/`, consultas con `Source.server` para eludir cachés ciegos, latidos en tiempo real (`sync_heartbeat`), timeouts defensivos de 8s y reconexión forzada de sockets (`disableNetwork` / `enableNetwork`).
+     - `SyncPushWorker`: Vaciado atómico de la cola local `sync_queue` hacia Firestore en lotes de hasta 50 documentos por WriteBatch con actualización de marcas temporales de servidor y replicación de tombstones (`isDeleted: true`).
+     - `SyncPullWorker`: Sincronización descendente con modo Bootstrap Inicial y modo Delta Incremental (`updatedAtUtc > lastSyncTimestamp`), persistencia de marcas de sincronización en `app_settings` y eliminación física en SQLite ante tombstones.
+     - `SyncEngine`: Orquestador singleton con API pública `syncNow({bool forceSocketReset = false, bool forceFullResync = false})`, reconexión automática ante cambios de red (`ConnectivityPlus`), vigía de ciclo de vida (`AppLifecycleListener` al reanudar app/desbloqueo de tablet) y escucha reactiva de latidos.
+  2. **Batería de Pruebas Unitarias de Sincronización (`test/data/sync/`)**:
+     - `sync_push_worker_test.dart`: 3 tests validando subida en lotes, tombstones de eliminación y purga de cola local.
+     - `sync_pull_worker_test.dart`: 4 tests validando bootstrap inicial, modo delta incremental, tombstones y forzado de re-sincronización completa.
+     - `sync_engine_orchestration_test.dart`: 4 tests validando exclusión mutua con Mutex, reset de sockets, captura resiliente de errores de red y actualización reactiva de estados.
+     - **84/84 tests unitarios aprobados (100% verde)** en todo el proyecto.
+  3. **Verificación Estática y Métricas**:
+     - `flutter analyze`: **0 issues found** (cero errores, cero advertencias).
+     - Modularización estricta respetada al 100% (archivos < 300 líneas y funciones < 40 líneas).
+- **Problemas**: Ninguno.
+- **Pendientes**: Inicio de la **Fase 4: Capa de Presentación, BLoCs / ViewModels y Vistas Operativas V2**.
+
 ## 31/08/2026 - Versión V2 (Fase 3 - Paso 3.2: Implementación Real de los Repositorios Locales SQLite)
 - **Qué se hizo**:
   1. **Los 10 Repositorios Locales SQLite (`lib/data/repositories/`)**:
