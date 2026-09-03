@@ -1,12 +1,12 @@
 {
-    "name": "María Belén POS",
-    "short_name": "María Belén POS",
+    "name": "Reparto Manager V2",
+    "short_name": "Reparto Manager",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#FFFFFF",
-    "theme_color": "#FFFFFF",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#212121",
+    "theme_color": "#FFEB3B",
+    "description": "Reparto Manager V2 - Sistema Profesional de Gestión & Reparto",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

@@ -1,6 +1,6 @@
 // lib/presentation/auth/auth_gateway.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../../domain/core/domain_failures.dart';
 import '../../domain/core/result.dart';
 import 'user_role.dart';
@@ -17,75 +17,62 @@ abstract class IAuthGateway {
   UserSession? get currentUserSession;
 }
 
-/// Implementación de producción con Firebase Authentication y Firestore.
+/// Implementación robusta multiplataforma (Web / Desktop / Mobile)
+/// utilizando la API REST oficial de Firebase Authentication (Google Identity Toolkit).
 class FirebaseAuthGateway implements IAuthGateway {
-  final FirebaseAuth? _authInstance;
-  final FirebaseFirestore? _firestoreInstance;
+  static const String _apiKey = 'AIzaSyCmYAizbCFOiytzHPM8zCYvkBc0tCKdKDo';
+  static const String _baseUrl = 'https://identitytoolkit.googleapis.com/v1/accounts';
 
-  FirebaseAuthGateway({
-    FirebaseAuth? auth,
-    FirebaseFirestore? firestore,
-  })  : _authInstance = auth,
-        _firestoreInstance = firestore;
+  final http.Client _client;
+  UserSession? _cachedSession;
 
-  FirebaseAuth get _auth => _authInstance ?? FirebaseAuth.instance;
-  FirebaseFirestore get _firestore =>
-      _firestoreInstance ?? FirebaseFirestore.instance;
+  FirebaseAuthGateway({http.Client? client}) : _client = client ?? http.Client();
 
   @override
-  UserSession? get currentUserSession {
-    final user = _auth.currentUser;
-    if (user == null) return null;
-    return UserSession(
-      tenantId: 'tenant_maria_belen',
-      userId: user.uid,
-      email: user.email ?? 'admin@mariabelen.com',
-      businessName: 'Distribuidora María Belén',
-      role: UserRole.superadmin,
-    );
-  }
+  UserSession? get currentUserSession => _cachedSession;
 
   @override
   Future<Result<UserSession, DomainFailure>> signIn(
     String emailOrUser,
     String password,
   ) async {
+    final email = _normalizeEmail(emailOrUser);
+    final cleanPass = password.trim();
+
     try {
-      final email = _normalizeEmail(emailOrUser);
-      UserCredential credential;
-      try {
-        credential = await _auth.signInWithEmailAndPassword(
-          email: email,
-          password: password.trim(),
-        );
-      } on FirebaseAuthException catch (e) {
-        if ((e.code == 'user-not-found' || e.code == 'invalid-credential') &&
-            email == 'admin@mariabelen.com' &&
-            password.trim() == 'admin123') {
-          try {
-            credential = await _auth.createUserWithEmailAndPassword(
-              email: email,
-              password: password.trim(),
-            );
-          } catch (_) {
-            return Result.fail(_mapAuthException(e));
-          }
-        } else {
-          return Result.fail(_mapAuthException(e));
-        }
+      final response = await _client.post(
+        Uri.parse('$_baseUrl:signInWithPassword?key=$_apiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': cleanPass,
+          'returnSecureToken': true,
+        }),
+      );
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200) {
+        final session = _buildSessionFromAuth(data, email);
+        _cachedSession = session;
+        return Result.ok(session);
       }
-      final user = credential.user;
-      if (user == null) {
-        return Result.fail(
-          const AuthFailure('No se pudo obtener la información del usuario.'),
-        );
+
+      final errorObj = data['error'] as Map<String, dynamic>?;
+      final errorCode = errorObj?['message'] as String? ?? 'UNKNOWN_ERROR';
+
+      // Auto-creación transparente de la cuenta maestra si aún no existe en Firebase Auth
+      if ((errorCode.contains('EMAIL_NOT_FOUND') || errorCode.contains('INVALID_LOGIN_CREDENTIALS')) &&
+          email == 'admin@mariabelen.com' &&
+          cleanPass == 'admin123') {
+        return await _signUpMasterAdmin(email, cleanPass);
       }
-      final session = await _resolveUserSession(user);
-      return Result.ok(session);
-    } on FirebaseAuthException catch (e) {
-      return Result.fail(_mapAuthException(e));
-    } catch (e) {
-      return Result.fail(AuthFailure('Error inesperado de autenticación: $e'));
+
+      return Result.fail(AuthFailure(_translateError(errorCode)));
+    } catch (_) {
+      return Result.fail(
+        const AuthFailure('No se pudo conectar con el servidor. Verifique su conexión a internet.'),
+      );
     }
   }
 
@@ -93,22 +80,71 @@ class FirebaseAuthGateway implements IAuthGateway {
   Future<Result<void, DomainFailure>> sendInvitationOrResetEmail(
     String email,
   ) async {
+    final normalized = _normalizeEmail(email);
+
     try {
-      final normalized = _normalizeEmail(email);
-      await _auth.sendPasswordResetEmail(email: normalized);
-      return Result.ok(null);
-    } on FirebaseAuthException catch (e) {
-      return Result.fail(_mapAuthException(e));
-    } catch (e) {
-      return Result.fail(AuthFailure('Error al enviar correo: $e'));
+      final response = await _client.post(
+        Uri.parse('$_baseUrl:sendOobCode?key=$_apiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'requestType': 'PASSWORD_RESET',
+          'email': normalized,
+        }),
+      );
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200) {
+        return Result.ok(null);
+      }
+
+      final errorObj = data['error'] as Map<String, dynamic>?;
+      final errorCode = errorObj?['message'] as String? ?? 'UNKNOWN_ERROR';
+
+      return Result.fail(AuthFailure(_translateError(errorCode)));
+    } catch (_) {
+      return Result.fail(
+        const AuthFailure('No se pudo conectar con el servidor. Verifique su conexión a internet.'),
+      );
     }
   }
 
   @override
   Future<void> signOut() async {
+    _cachedSession = null;
+  }
+
+  Future<Result<UserSession, DomainFailure>> _signUpMasterAdmin(
+    String email,
+    String password,
+  ) async {
     try {
-      await _auth.signOut();
-    } catch (_) {}
+      final response = await _client.post(
+        Uri.parse('$_baseUrl:signUp?key=$_apiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+          'returnSecureToken': true,
+        }),
+      );
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200) {
+        final session = _buildSessionFromAuth(data, email);
+        _cachedSession = session;
+        return Result.ok(session);
+      }
+
+      return Result.fail(
+        const AuthFailure('Error al inicializar la cuenta maestra. Intente nuevamente.'),
+      );
+    } catch (_) {
+      return Result.fail(
+        const AuthFailure('No se pudo conectar con el servidor para crear la cuenta maestra.'),
+      );
+    }
   }
 
   String _normalizeEmail(String input) {
@@ -119,52 +155,38 @@ class FirebaseAuthGateway implements IAuthGateway {
     return trimmed;
   }
 
-  Future<UserSession> _resolveUserSession(User user) async {
-    try {
-      final doc = await _firestore
-          .collection('v2_users')
-          .doc(user.uid)
-          .get(const GetOptions(source: Source.serverAndCache));
-      if (doc.exists && doc.data() != null) {
-        final data = doc.data()!;
-        return UserSession(
-          tenantId: data['tenantId'] as String? ?? 'tenant_maria_belen',
-          userId: user.uid,
-          email: user.email ?? (data['email'] as String? ?? 'admin@mariabelen.com'),
-          businessName:
-              data['businessName'] as String? ?? 'Distribuidora María Belén',
-          role: UserRole.fromString(data['role'] as String?),
-        );
-      }
-    } catch (_) {}
+  UserSession _buildSessionFromAuth(Map<String, dynamic> data, String email) {
+    final userId = data['localId'] as String? ?? 'usr_admin_maria_belen';
     return UserSession(
       tenantId: 'tenant_maria_belen',
-      userId: user.uid,
-      email: user.email ?? 'admin@mariabelen.com',
+      userId: userId,
+      email: email,
       businessName: 'Distribuidora María Belén',
       role: UserRole.superadmin,
     );
   }
 
-  DomainFailure _mapAuthException(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'user-not-found':
-        return const AuthFailure('Correo o usuario no registrado en el sistema.');
-      case 'wrong-password':
-      case 'invalid-credential':
-        return const AuthFailure('Contraseña incorrecta.');
-      case 'invalid-email':
-        return const AuthFailure('El formato del correo electrónico no es válido.');
-      case 'user-disabled':
-        return const AuthFailure('Esta cuenta de usuario ha sido inhabilitada.');
-      case 'too-many-requests':
-        return const AuthFailure(
-          'Demasiados intentos fallidos. Intente nuevamente en unos minutos.',
-        );
-      case 'network-request-failed':
-        return const AuthFailure('Sin conexión a internet. Verifique su red.');
-      default:
-        return AuthFailure(e.message ?? 'Error de autenticación.');
+  String _translateError(String errorCode) {
+    if (errorCode.contains('EMAIL_NOT_FOUND') ||
+        errorCode.contains('INVALID_PASSWORD') ||
+        errorCode.contains('INVALID_LOGIN_CREDENTIALS')) {
+      return 'Usuario o contraseña incorrectos.';
     }
+    if (errorCode.contains('USER_DISABLED')) {
+      return 'Esta cuenta de usuario ha sido suspendida.';
+    }
+    if (errorCode.contains('TOO_MANY_ATTEMPTS_TRY_LATER')) {
+      return 'Demasiados intentos fallidos. Por seguridad, intente en unos minutos.';
+    }
+    if (errorCode.contains('INVALID_EMAIL')) {
+      return 'El formato del correo electrónico ingresado no es válido.';
+    }
+    if (errorCode.contains('EMAIL_EXISTS')) {
+      return 'Este correo ya se encuentra registrado.';
+    }
+    if (errorCode.contains('WEAK_PASSWORD')) {
+      return 'La contraseña debe contener al menos 6 caracteres.';
+    }
+    return 'No se pudo iniciar sesión. Verifique los datos ingresados.';
   }
 }
