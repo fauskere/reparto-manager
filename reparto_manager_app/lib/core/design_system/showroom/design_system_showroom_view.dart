@@ -5,6 +5,7 @@ import 'tabs/checkout_tab.dart';
 import 'tabs/filters_tab.dart';
 import 'tabs/metrics_tab.dart';
 import 'tabs/structure_tab.dart';
+import '../../../presentation/auth/session_manager.dart';
 
 /// Galería Visual y Showroom interactivo de Reparto-Manager V2.
 /// Incluye selector de temas dinámicos en vivo y vista de todos los módulos atómicos.
@@ -44,6 +45,13 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
           appBar: AppBar(
             backgroundColor: AppColors.backgroundDark,
             title: Text('Design System Showroom V2', style: AppTypography.h3),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout_rounded),
+                tooltip: 'Cerrar Sesión',
+                onPressed: () => SessionManager.instance.signOut(),
+              ),
+            ],
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(88),
               child: Column(
