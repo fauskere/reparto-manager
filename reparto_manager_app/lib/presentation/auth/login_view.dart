@@ -1,5 +1,6 @@
 // lib/presentation/auth/login_view.dart
 import 'package:flutter/material.dart';
+import '../../core/design_system/theme_manager.dart';
 import '../../core/design_system/tokens/app_colors.dart';
 import '../../core/design_system/tokens/app_spacing.dart';
 import '../../core/design_system/tokens/app_typography.dart';
@@ -76,6 +77,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = ThemeManager.instance.currentPalette.primary;
+
     return Scaffold(
       backgroundColor: AppColors.surfaceDark,
       body: SafeArea(
@@ -92,13 +95,13 @@ class _LoginViewState extends State<LoginView> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildLogoHeader(),
+                      _buildLogoHeader(primaryColor),
                       const SizedBox(height: AppSpacing.xl),
-                      _buildEmailField(),
+                      _buildEmailField(primaryColor),
                       const SizedBox(height: AppSpacing.lg),
-                      _buildPasswordField(),
+                      _buildPasswordField(primaryColor),
                       const SizedBox(height: AppSpacing.sm),
-                      _buildRememberAndForgotRow(),
+                      _buildRememberAndForgotRow(primaryColor),
                       if (_errorMessage != null) ...[
                         const SizedBox(height: AppSpacing.sm),
                         _buildErrorBanner(),
@@ -118,23 +121,23 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildLogoHeader() {
+  Widget _buildLogoHeader(Color primaryColor) {
     return Column(
       children: [
         Image.asset(
           'assets/Logo.png',
           height: 72,
           errorBuilder: (context, error, stackTrace) => Icon(
-            Icons.local_shipping_rounded,
+            Icons.local_shipping,
             size: 64,
-            color: AppColors.primaryYellow,
+            color: primaryColor,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
           'REPARTO MANAGER',
           style: AppTypography.h2.copyWith(
-            color: AppColors.primaryYellow,
+            color: primaryColor,
             fontWeight: FontWeight.w900,
             letterSpacing: 1.2,
           ),
@@ -149,19 +152,19 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildEmailField() {
+  Widget _buildEmailField(Color primaryColor) {
     return AppTextField(
       label: 'Correo Electrónico / Usuario',
       hintText: 'ejemplo@correo.com',
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
-      prefixIcon: Icon(Icons.person, color: AppColors.primaryYellow, size: 22),
+      prefixIcon: Icon(Icons.person, color: primaryColor, size: 22),
       enabled: !_isLoading,
     );
   }
 
-  Widget _buildPasswordField() {
+  Widget _buildPasswordField(Color primaryColor) {
     return AppTextField(
       label: 'Contraseña',
       hintText: '••••••••',
@@ -169,11 +172,11 @@ class _LoginViewState extends State<LoginView> {
       obscureText: _obscurePassword,
       textInputAction: TextInputAction.done,
       onSubmitted: (_) => _handleLogin(),
-      prefixIcon: Icon(Icons.lock, color: AppColors.primaryYellow, size: 22),
+      prefixIcon: Icon(Icons.lock, color: primaryColor, size: 22),
       suffixIcon: IconButton(
         icon: Icon(
           _obscurePassword ? Icons.visibility_off : Icons.visibility,
-          color: AppColors.primaryYellow,
+          color: primaryColor,
           size: 22,
         ),
         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -182,7 +185,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildRememberAndForgotRow() {
+  Widget _buildRememberAndForgotRow(Color primaryColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -195,7 +198,7 @@ class _LoginViewState extends State<LoginView> {
               children: [
                 Checkbox(
                   value: _rememberMe,
-                  activeColor: AppColors.primaryYellow,
+                  activeColor: primaryColor,
                   checkColor: AppColors.textOnPrimary,
                   side: BorderSide(color: AppColors.textSecondary),
                   onChanged: _isLoading
@@ -221,7 +224,7 @@ class _LoginViewState extends State<LoginView> {
             child: Text(
               '¿Olvidaste tu contraseña o necesitas activar tu cuenta?',
               style: AppTypography.bodySmall.copyWith(
-                color: AppColors.primaryYellow,
+                color: primaryColor,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.right,
