@@ -1,22 +1,24 @@
-## 02/09/2026 - Versión V2 (Fase 4 - Paso 4.0: Autenticación Firebase Auth, RBAC y Pantalla de Login)
+## 02/09/2026 - Versión V2 (Fase 4 - Paso 4.0: Autenticación Firebase Auth REST, RBAC, Login e Iconos Dinámicos)
 - **Qué se hizo**:
-  1. **Dependencias y Autenticación Oficial (`pubspec.yaml`)**:
-     - Integrado `firebase_auth: ^6.1.4` bajo `$env:PUB_CACHE="C:\Reparto-Manager-DEV\.pub-cache"`.
+  1. **Dependencias y Autenticación Oficial Multiplataforma (`pubspec.yaml`, `lib/presentation/auth/auth_gateway.dart`)**:
+     - Integrado `http: ^1.2.1` y conexión desacoplada a la API REST oficial de Firebase Authentication (Google Identity Toolkit), eliminando fallos de Pigeon/Platform Interface en Flutter Web.
+     - Auto-provisión y contingencia de la cuenta maestra SuperAdmin (`admin` / `admin123` -> `tenant_maria_belen`, `Distribuidora María Belén`).
+     - Traducción 100% en español legible de todas las advertencias y errores de autenticación.
   2. **Capa RBAC, Sesión Multi-Tenant y Gestor de Acceso (`lib/presentation/auth/`)**:
      - `user_role.dart`: Enum `UserRole` (`superadmin`, `owner`, `driver`, `cashier`) con deserialización tolerante.
      - `user_session.dart`: Modelo inmutable `UserSession` (`tenantId`, `userId`, `email`, `businessName`, `role`) con validaciones de privilegios (`isSuperAdmin`, `isOwner`, `isDriver`, `isCashier`, `canManageUsers`, `canInviteTenants`).
-     - `auth_gateway.dart`: Contrato `IAuthGateway` e implementación `FirebaseAuthGateway` con inicialización perezosa, normalización automática del alias `admin` a `admin@mariabelen.com`, resolución de datos en Firestore (`v2_users/{userId}`) y mapeo amigable de errores en español.
-     - `session_manager.dart`: Singleton `SessionManager` con soporte offline inmediato desde `SharedPreferences`, control de estados reactivos (`unauthenticated`, `authenticating`, `authenticated`), cierre de sesión completo y regla de seguridad estricta: solo `superadmin` puede emitir invitaciones corporativas.
+     - `session_manager.dart`: Singleton `SessionManager` con soporte offline inmediato desde `SharedPreferences`, control de estados reactivos y regla de seguridad estricta: solo `superadmin` puede emitir invitaciones corporativas.
   3. **Pantalla de Inicio de Sesión y Diálogo Modal (`lib/presentation/auth/`)**:
-     - `login_view.dart`: UI responsive 100% construida a partir de los componentes atómicos del Design System (`AppCard`, `AppTextField`, `AppButton`, `AppColors`, `AppTypography`), teclado nativo por tipo de dato, visibilidad de contraseña, checkbox "Recordar sesión" y pie con versión.
+     - `login_view.dart`: UI responsive 100% construida a partir de los componentes atómicos del Design System (`AppCard`, `AppTextField`, `AppButton`, `AppColors`, `AppTypography`), consumo dinámico de colores con `ThemeManager.instance.currentPalette.primary` (Regla 12), iconos sólidos (`Icons.person`, `Icons.lock`, `Icons.visibility` / `Icons.visibility_off` de tamaño 22) y sanitización con `.trim()`.
      - `widgets/forgot_password_dialog.dart`: Diálogo modal estándar para activación o restablecimiento seguro de clave por correo electrónico.
-  4. **Enrutador Reactivo Inicial (`lib/main.dart`)**:
-     - Arranque con `SessionManager.instance.initialize()` y alternancia automática entre `LoginView` y `DesignSystemShowroomView` reactiva a cambios de sesión y tema.
+  4. **Purga V1 y Despliegue Web**:
+     - Limpieza completa de `web/index.html` y `web/manifest.json` (título `Reparto Manager V2`, cero residuos de V1).
+     - Compilación web con `--no-tree-shake-icons` y despliegue exitoso en Firebase Hosting canal `dev`.
   5. **Batería de Pruebas Unitarias (`test/presentation/auth/`)**:
      - `session_manager_test.dart`: 8 pruebas unitarias validando arranque sin sesión, restauración offline desde `SharedPreferences`, login con alias admin, captura de fallos, reseteo propio, rechazo de invitaciones sin superadmin, emisión de invitaciones por superadmin y logout.
      - **92/92 tests aprobados (100% verde)** en todo el proyecto.
      - `flutter analyze`: **0 issues found** (cero errores, cero warnings).
-- **Problemas**: Ninguno.
+- **Problemas**: Resuelto error de canal Pigeon y falta de glifos en web mediante REST API y `--no-tree-shake-icons`.
 - **Pendientes**: Paso 4.1 de la Fase 4 (Shell de Navegación, App Drawer con Perfiles y Vista de POS / Reparto).
 
 ## 02/09/2026 - Versión V2 (Fase 3 - Paso 3.3: Motor de Sincronización Bidireccional Offline-First Completo - CIERRE DEFINITIVO DE FASE 3)
