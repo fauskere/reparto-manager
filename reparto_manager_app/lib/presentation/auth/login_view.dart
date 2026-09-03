@@ -156,7 +156,7 @@ class _LoginViewState extends State<LoginView> {
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
-      prefixIcon: const Icon(Icons.person_outline_rounded),
+      prefixIcon: Icon(Icons.person, color: AppColors.primaryYellow, size: 22),
       enabled: !_isLoading,
     );
   }
@@ -169,13 +169,12 @@ class _LoginViewState extends State<LoginView> {
       obscureText: _obscurePassword,
       textInputAction: TextInputAction.done,
       onSubmitted: (_) => _handleLogin(),
-      prefixIcon: const Icon(Icons.lock_outline_rounded),
+      prefixIcon: Icon(Icons.lock, color: AppColors.primaryYellow, size: 22),
       suffixIcon: IconButton(
         icon: Icon(
-          _obscurePassword
-              ? Icons.visibility_off_outlined
-              : Icons.visibility_outlined,
-          color: AppColors.textSecondary,
+          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+          color: AppColors.primaryYellow,
+          size: 22,
         ),
         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
       ),

@@ -97,7 +97,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _handleSendEmail(),
-            prefixIcon: const Icon(Icons.email_outlined),
+            prefixIcon: Icon(Icons.email, color: AppColors.primaryYellow, size: 22),
           ),
           if (_errorMessage != null) ...[
             const SizedBox(height: AppSpacing.sm),
