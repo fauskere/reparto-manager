@@ -46,10 +46,17 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
             backgroundColor: AppColors.backgroundDark,
             title: Text('Design System Showroom V2', style: AppTypography.h3),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.logout_rounded),
-                tooltip: 'Cerrar Sesión',
-                onPressed: () => SessionManager.instance.signOut(),
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Center(
+                  child: AppButton(
+                    text: 'Cerrar Sesión',
+                    variant: AppButtonVariant.danger,
+                    size: AppButtonSize.small,
+                    icon: Icons.logout,
+                    onPressed: () => SessionManager.instance.signOut(),
+                  ),
+                ),
               ),
             ],
             bottom: PreferredSize(
