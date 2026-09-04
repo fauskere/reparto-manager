@@ -1,3 +1,26 @@
+## 03/09/2026 - Versión V2 (Atomic Design System: Nuevos Componentes Atómicos de Clientes & Pestaña Showroom)
+- **Qué se hizo**:
+  1. **Componentes Atómicos de Clientes (`lib/core/design_system/widgets/clients/`)**:
+     - `ClientListItem` (190 líneas): Ítem de cliente compacto para vista de lista (1 columna).
+       * Margen Izquierdo: Avatar con badge circular para horario corrido (verde sólido `Icons.wb_sunny_rounded`) vs cierra mediodía (naranja `Icons.access_time_rounded`).
+       * Centro: Nombre y Apodo destacados (`AppTypography.bodyLarge`), dirección, zona y badge de horario.
+       * Margen Derecho: Botón de pase [❌] que conmuta a deshacer [↩️], `BalanceBadge` (deuda/a favor/al día), botón de edición [✏️], botón de eliminación [🗑️] y flecha [>].
+       * Comportamiento de atenuación: Reducción de opacidad a 0.55 y estilo tachado al marcarse como visitado o pasado.
+     - `ClientCardItem` (190 líneas): Tarjeta estructurada para grilla (2 columnas en tablet/desktop) con cabecera de saldo, avatar, datos de ubicación y barra inferior de acciones.
+     - `ClientsBottomBar` (95 líneas): Barra inferior fija con botón principal `+ AGREGAR CLIENTE` a la izquierda y tarjeta de `Total Adeudado:` a la derecha.
+     - `clients.dart`: Archivo de barril con exportación transparente en `design_system.dart`.
+  2. **Integración en el Showroom (`ShowroomClientsTab` & `design_system_showroom_view.dart`)**:
+     - Pestaña interactiva "Clientes" con selector de vista (Lista vs Grilla de 2 columnas).
+     - Ejemplos interactivos: cliente deudor no visitado, cliente al día con horario corrido, cliente visitado (tinte verde) y cliente pasado de largo (con botón de deshacer activo).
+     - Barra fija inferior `ClientsBottomBar` vinculada dinámicamente al total adeudado.
+  3. **Verificación Total**:
+     - `flutter test`: **96/96 tests aprobados (100% verde)** incluyendo 4 nuevos tests de widgets en `test/widgets/clients_widgets_test.dart`.
+     - `flutter analyze lib test`: **0 issues found** (0 errores, 0 advertencias).
+     - Compilación Web con `--no-tree-shake-icons`.
+     - Despliegue en Firebase Hosting (Producción y Canal `dev`).
+- **Problemas**: Ninguno.
+- **Pendientes**: Paso 4.1 de la Fase 4 (Shell de Navegación, App Drawer con Perfiles y Vista Operativa POS / Reparto).
+
 ## 03/09/2026 - Versión V2 (Mantenimiento Preventivo, Modularización Estricta de Widgets y Repositorios - Regla 2)
 - **Qué se hizo**:
   1. **Modularización de Widgets del Atomic Design System (`lib/core/design_system/widgets/`)**:

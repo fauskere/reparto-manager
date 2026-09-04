@@ -12,6 +12,7 @@ export 'widgets/balance_badge.dart';
 export 'widgets/status_chip.dart';
 export 'widgets/app_card.dart';
 export 'widgets/client_card.dart';
+export 'widgets/clients/clients.dart';
 
 // Componentes Especializados
 export 'widgets/module_header.dart';

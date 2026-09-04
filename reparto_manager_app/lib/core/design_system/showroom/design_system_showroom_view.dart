@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../design_system.dart';
 import 'tabs/catalog_tab.dart';
 import 'tabs/checkout_tab.dart';
+import 'tabs/clients_tab.dart';
 import 'tabs/filters_tab.dart';
 import 'tabs/metrics_tab.dart';
 import 'tabs/structure_tab.dart';
@@ -23,7 +24,7 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -71,6 +72,7 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
                     labelColor: AppColors.primaryYellow,
                     unselectedLabelColor: AppColors.textSecondary,
                     tabs: const [
+                      Tab(icon: Icon(Icons.people_alt_outlined), text: 'Clientes'),
                       Tab(icon: Icon(Icons.view_quilt_outlined), text: 'Estructura'),
                       Tab(icon: Icon(Icons.storefront_outlined), text: 'Catálogo & Productos'),
                       Tab(icon: Icon(Icons.filter_alt_outlined), text: 'Filtros'),
@@ -85,6 +87,7 @@ class _DesignSystemShowroomViewState extends State<DesignSystemShowroomView>
           body: TabBarView(
             controller: _tabController,
             children: [
+              ShowroomClientsTab(key: ValueKey('clients_${current.name}')),
               ShowroomStructureTab(key: ValueKey('struct_${current.name}')),
               ShowroomCatalogTab(key: ValueKey('cat_${current.name}')),
               ShowroomFiltersTab(key: ValueKey('filt_${current.name}')),

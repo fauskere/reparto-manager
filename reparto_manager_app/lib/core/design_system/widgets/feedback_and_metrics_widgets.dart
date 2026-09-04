@@ -165,6 +165,10 @@ class AppSnackBar {
     _show(context, message, AppColors.warning, Icons.warning_amber_rounded);
   }
 
+  static void showInfo(BuildContext context, String message) {
+    _show(context, message, AppColors.info, Icons.info_outline_rounded);
+  }
+
   static void _show(BuildContext context, String message, Color color, IconData icon) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
