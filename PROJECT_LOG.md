@@ -1,3 +1,23 @@
+## 03/09/2026 - Versión V2 (Mantenimiento Preventivo, Modularización Estricta de Widgets y Repositorios - Regla 2)
+- **Qué se hizo**:
+  1. **Modularización de Widgets del Atomic Design System (`lib/core/design_system/widgets/`)**:
+     - `checkout_widgets.dart` -> Dividido en `cart_item_row.dart` (110 líneas) y `checkout_widgets.dart` (230 líneas).
+     - `product_widgets.dart` -> Dividido en `product_card.dart` (180 líneas) y `product_widgets.dart` (150 líneas).
+     - `app_header_filter_bar.dart` -> Dividido en `app_search_bar.dart` (40 líneas) y `app_header_filter_bar.dart` (250 líneas).
+     - `app_dialogs.dart` -> Dividido en `app_receipt_preview_dialog.dart` (100 líneas) y `app_dialogs.dart` (220 líneas).
+     - `feedback_and_metrics_widgets.dart` -> Dividido en `ranking_item_row.dart` (120 líneas) y `feedback_and_metrics_widgets.dart` (190 líneas).
+     - Ningún archivo de widgets supera las 280 líneas. Exportaciones transparentes en `design_system.dart` sin breaking changes.
+  2. **Modularización del Repositorio de Ventas (`lib/data/repositories/`)**:
+     - `sale_repository_impl.dart` (322 líneas) -> Extraídos helpers analíticos y de desglose contable a `sale_repository_helpers.dart` (60 líneas), reduciendo la implementación a 240 líneas.
+  3. **Limpieza de Lints y Calidad en `login_view.dart`**:
+     - Corregidos warnings de `unnecessary_underscores` en el `errorBuilder` del logo.
+  4. **Verificación Total**:
+     - `flutter analyze`: **0 issues found** (0 errores, 0 warnings).
+     - `flutter test`: **92/92 tests aprobados (100% verde)**.
+     - Compilación y despliegue Web con `--no-tree-shake-icons`.
+- **Problemas**: Ninguno.
+- **Pendientes**: Paso 4.1 de la Fase 4 (Shell de Navegación, App Drawer con Perfiles y Vista Operativa POS / Reparto).
+
 ## 02/09/2026 - Versión V2 (Fase 4 - Paso 4.0: Autenticación Firebase Auth REST, RBAC, Login e Iconos Dinámicos)
 - **Qué se hizo**:
   1. **Dependencias y Autenticación Oficial Multiplataforma (`pubspec.yaml`, `lib/presentation/auth/auth_gateway.dart`)**:
