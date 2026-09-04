@@ -1,8 +1,7 @@
 // lib/data/repositories/sale_repository_impl.dart
 // Capa de Datos e Infraestructura SQLite - Reparto-Manager V2
-// Modularización Estricta: < 300 líneas | Funciones < 40 líneas
+// Modularización Estricta: < 280 líneas | Funciones < 40 líneas
 
-import 'dart:convert';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../../domain/core/domain_failures.dart';
 import '../../domain/core/money.dart';
@@ -12,6 +11,7 @@ import '../../domain/entities/sale_entity.dart';
 import '../../domain/repositories/i_sale_repository.dart';
 import '../database/app_database.dart';
 import '../models/sale_model.dart';
+import 'sale_repository_helpers.dart';
 import 'sync_queue_helper.dart';
 
 /// Implementación local de [ISaleRepository] basada en SQLite.
@@ -122,7 +122,12 @@ class SaleRepositoryImpl implements ISaleRepository {
         WHERE tenantId = ? AND isCancelled = 0 AND dateUtc >= ? AND dateUtc <= ?
       ''', [tenantId, startStr, endStr]);
 
-      final breakdown = await _buildClientBreakdown(db, tenantId, startStr, endStr);
+      final breakdown = await SaleRepositoryHelpers.buildClientBreakdown(
+        db,
+        tenantId,
+        startStr,
+        endStr,
+      );
 
       final sRow = salesRows.first;
       final pRow = paymentsRows.first;
@@ -158,29 +163,7 @@ class SaleRepositoryImpl implements ISaleRepository {
         whereArgs: [tenantId, startUtc.toUtc().toIso8601String(), endUtc.toUtc().toIso8601String()],
       );
 
-      final Map<String, int> productCounts = {};
-      final Map<String, String> productNames = {};
-
-      for (final row in rows) {
-        final items = jsonDecode(row['itemsJson'] as String) as List<dynamic>;
-        for (final raw in items) {
-          final item = raw as Map<String, dynamic>;
-          final pid = item['productId'] as String;
-          final qty = (item['quantity'] as num).toInt();
-          productCounts[pid] = (productCounts[pid] ?? 0) + qty;
-          productNames[pid] = item['productName'] as String;
-        }
-      }
-
-      final sorted = productCounts.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-
-      final top = sorted.take(limit).map((e) => {
-        'productId': e.key,
-        'productName': productNames[e.key] ?? '',
-        'totalQuantity': e.value,
-      }).toList();
-
+      final top = SaleRepositoryHelpers.parseTopProducts(rows, limit);
       return Result.ok(top);
     } catch (e) {
       return Result.fail(DatabaseFailure('Error al obtener top de productos', e));
@@ -284,39 +267,5 @@ class SaleRepositoryImpl implements ISaleRepository {
     } catch (e) {
       return Result.fail(DatabaseFailure('Error al obtener próximo número de ticket', e));
     }
-  }
-
-  Future<List<CashSummaryItem>> _buildClientBreakdown(
-    Database db,
-    String tenantId,
-    String startStr,
-    String endStr,
-  ) async {
-    final clientRows = await db.rawQuery('''
-      SELECT 
-        clientId, 
-        clientName, 
-        COALESCE(SUM(cashPaidCents), 0) AS totalCash,
-        COALESCE(SUM(transferPaidCents), 0) AS totalTransfer
-      FROM (
-        SELECT clientId, clientName, cashPaidCents, transferPaidCents 
-        FROM sales 
-        WHERE tenantId = ? AND isCancelled = 0 AND dateUtc >= ? AND dateUtc <= ?
-        UNION ALL
-        SELECT p.clientId, COALESCE(c.name, 'Cliente') as clientName, p.cashPaidCents, p.transferPaidCents 
-        FROM payments p
-        LEFT JOIN clients c ON c.tenantId = p.tenantId AND c.id = p.clientId
-        WHERE p.tenantId = ? AND p.isCancelled = 0 AND p.dateUtc >= ? AND p.dateUtc <= ?
-      )
-      GROUP BY clientId, clientName
-      ORDER BY clientName ASC
-    ''', [tenantId, startStr, endStr, tenantId, startStr, endStr]);
-
-    return clientRows.map((r) => CashSummaryItem(
-      clientId: r['clientId'] as String,
-      clientName: r['clientName'] as String,
-      cash: Money.fromCents((r['totalCash'] as num).toInt()),
-      transfer: Money.fromCents((r['totalTransfer'] as num).toInt()),
-    )).toList();
   }
 }

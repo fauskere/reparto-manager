@@ -1,8 +1,11 @@
+// lib/core/design_system/widgets/app_header_filter_bar.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../tokens/app_colors.dart';
 import '../tokens/app_spacing.dart';
-import 'app_text_field.dart';
+import 'app_search_bar.dart';
+
+export 'app_search_bar.dart';
 
 enum FilterPeriod { dia, semana, mes, ano, todo }
 
@@ -75,7 +78,11 @@ class AppHeaderFilterBar extends StatelessWidget {
           ),
           if (showSearch) ...[
             const SizedBox(height: AppSpacing.sm),
-            _buildSearchBar(),
+            AppSearchBar(
+              controller: searchController,
+              onChanged: onSearchChanged,
+              onClear: onClearSearch,
+            ),
           ],
           if (showCategories && categories.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.sm),
@@ -244,25 +251,6 @@ class AppHeaderFilterBar extends StatelessWidget {
           }).toList(),
         ),
       ),
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return AppTextField(
-      hintText: 'Buscar por nombre, zona o comprobante...',
-      controller: searchController,
-      onChanged: onSearchChanged,
-      fillColor: AppColors.searchBarBackground,
-      textColor: AppColors.searchBarText,
-      hintColor: AppColors.searchBarPlaceholder,
-      prefixIcon: Icon(Icons.search, size: 18, color: AppColors.searchBarIcon),
-      suffixIcon: (searchController?.text.isNotEmpty ?? false)
-          ? IconButton(
-              icon: Icon(Icons.clear, size: 18, color: AppColors.searchBarIcon),
-              onPressed: onClearSearch,
-            )
-          : null,
-      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
     );
   }
 

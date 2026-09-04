@@ -153,7 +153,8 @@ class _LoginViewState extends State<LoginView> {
         Image.asset(
           'assets/Logo.png',
           height: 72,
-          errorBuilder: (_, __, ___) => Icon(Icons.local_shipping, size: 64, color: primary),
+          errorBuilder: (context, error, stackTrace) =>
+              Icon(Icons.local_shipping, size: 64, color: primary),
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
