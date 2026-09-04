@@ -1,5 +1,5 @@
-// lib/presentation/auth/widgets/forgot_password_dialog.dart
 import 'package:flutter/material.dart';
+import '../../../core/design_system/theme_manager.dart';
 import '../../../core/design_system/tokens/app_colors.dart';
 import '../../../core/design_system/tokens/app_spacing.dart';
 import '../../../core/design_system/tokens/app_typography.dart';
@@ -97,7 +97,11 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _handleSendEmail(),
-            prefixIcon: Icon(Icons.email, color: AppColors.primaryYellow, size: 22),
+            prefixIcon: Icon(
+              Icons.email,
+              color: ThemeManager.instance.currentPalette.primary,
+              size: 22,
+            ),
           ),
           if (_errorMessage != null) ...[
             const SizedBox(height: AppSpacing.sm),

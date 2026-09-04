@@ -11,7 +11,7 @@ import '../../core/design_system/widgets/feedback_and_metrics_widgets.dart';
 import 'session_manager.dart';
 import 'widgets/forgot_password_dialog.dart';
 
-/// Pantalla de inicio de sesión oficial para Reparto-Manager V2.
+/// Pantalla oficial de Inicio de Sesión para Reparto-Manager V2.
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -20,7 +20,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -68,16 +67,9 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void _openForgotPassword() {
-    ForgotPasswordDialog.show(
-      context,
-      initialEmail: _emailController.text.trim(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final primaryColor = ThemeManager.instance.currentPalette.primary;
+    final primary = ThemeManager.instance.currentPalette.primary;
 
     return Scaffold(
       backgroundColor: AppColors.surfaceDark,
@@ -89,29 +81,63 @@ class _LoginViewState extends State<LoginView> {
               constraints: const BoxConstraints(maxWidth: 440),
               child: AppCard(
                 padding: AppSpacing.paddingXl,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildLogoHeader(primaryColor),
-                      const SizedBox(height: AppSpacing.xl),
-                      _buildEmailField(primaryColor),
-                      const SizedBox(height: AppSpacing.lg),
-                      _buildPasswordField(primaryColor),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildHeader(primary),
+                    const SizedBox(height: AppSpacing.xl),
+                    AppTextField(
+                      label: 'Correo Electrónico / Usuario',
+                      hintText: 'ejemplo@correo.com',
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: Icon(Icons.person, color: primary, size: 22),
+                      enabled: !_isLoading,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppTextField(
+                      label: 'Contraseña',
+                      hintText: '••••••••',
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _handleLogin(),
+                      prefixIcon: Icon(Icons.lock, color: primary, size: 22),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          color: primary,
+                          size: 22,
+                        ),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                      enabled: !_isLoading,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _buildOptionsRow(primary),
+                    if (_errorMessage != null) ...[
                       const SizedBox(height: AppSpacing.sm),
-                      _buildRememberAndForgotRow(primaryColor),
-                      if (_errorMessage != null) ...[
-                        const SizedBox(height: AppSpacing.sm),
-                        _buildErrorBanner(),
-                      ],
-                      const SizedBox(height: AppSpacing.lg),
-                      _buildSubmitButton(),
-                      const SizedBox(height: AppSpacing.xl),
-                      _buildVersionFooter(),
+                      _buildErrorBanner(),
                     ],
-                  ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton(
+                      text: 'Ingresar',
+                      variant: AppButtonVariant.primary,
+                      size: AppButtonSize.large,
+                      isLoading: _isLoading,
+                      fullWidth: true,
+                      onPressed: _handleLogin,
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    Center(
+                      child: Text(
+                        'v2.0.0-rc1 • Reparto Manager V2',
+                        style: AppTypography.caption(AppColors.textMuted),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -121,26 +147,18 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildLogoHeader(Color primaryColor) {
+  Widget _buildHeader(Color primary) {
     return Column(
       children: [
         Image.asset(
           'assets/Logo.png',
           height: 72,
-          errorBuilder: (context, error, stackTrace) => Icon(
-            Icons.local_shipping,
-            size: 64,
-            color: primaryColor,
-          ),
+          errorBuilder: (_, __, ___) => Icon(Icons.local_shipping, size: 64, color: primary),
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
           'REPARTO MANAGER',
-          style: AppTypography.h2.copyWith(
-            color: primaryColor,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.2,
-          ),
+          style: AppTypography.h2.copyWith(color: primary, fontWeight: FontWeight.w900, letterSpacing: 1.2),
         ),
         const SizedBox(height: 2),
         Text(
@@ -152,40 +170,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildEmailField(Color primaryColor) {
-    return AppTextField(
-      label: 'Correo Electrónico / Usuario',
-      hintText: 'ejemplo@correo.com',
-      controller: _emailController,
-      keyboardType: TextInputType.emailAddress,
-      textInputAction: TextInputAction.next,
-      prefixIcon: Icon(Icons.person, color: primaryColor, size: 22),
-      enabled: !_isLoading,
-    );
-  }
-
-  Widget _buildPasswordField(Color primaryColor) {
-    return AppTextField(
-      label: 'Contraseña',
-      hintText: '••••••••',
-      controller: _passwordController,
-      obscureText: _obscurePassword,
-      textInputAction: TextInputAction.done,
-      onSubmitted: (_) => _handleLogin(),
-      prefixIcon: Icon(Icons.lock, color: primaryColor, size: 22),
-      suffixIcon: IconButton(
-        icon: Icon(
-          _obscurePassword ? Icons.visibility_off : Icons.visibility,
-          color: primaryColor,
-          size: 22,
-        ),
-        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-      ),
-      enabled: !_isLoading,
-    );
-  }
-
-  Widget _buildRememberAndForgotRow(Color primaryColor) {
+  Widget _buildOptionsRow(Color primary) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -198,19 +183,15 @@ class _LoginViewState extends State<LoginView> {
               children: [
                 Checkbox(
                   value: _rememberMe,
-                  activeColor: primaryColor,
+                  activeColor: primary,
                   checkColor: AppColors.textOnPrimary,
                   side: BorderSide(color: AppColors.textSecondary),
-                  onChanged: _isLoading
-                      ? null
-                      : (val) => setState(() => _rememberMe = val ?? false),
+                  onChanged: _isLoading ? null : (val) => setState(() => _rememberMe = val ?? false),
                 ),
                 Expanded(
                   child: Text(
                     'Recordar sesión en este dispositivo',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
+                    style: AppTypography.bodySmall.copyWith(color: AppColors.textPrimary),
                   ),
                 ),
               ],
@@ -220,13 +201,12 @@ class _LoginViewState extends State<LoginView> {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
-            onPressed: _isLoading ? null : _openForgotPassword,
+            onPressed: _isLoading
+                ? null
+                : () => ForgotPasswordDialog.show(context, initialEmail: _emailController.text.trim()),
             child: Text(
               '¿Olvidaste tu contraseña o necesitas activar tu cuenta?',
-              style: AppTypography.bodySmall.copyWith(
-                color: primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.bodySmall.copyWith(color: primary, fontWeight: FontWeight.w600),
               textAlign: TextAlign.right,
             ),
           ),
@@ -257,26 +237,6 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSubmitButton() {
-    return AppButton(
-      text: 'Ingresar',
-      variant: AppButtonVariant.primary,
-      size: AppButtonSize.large,
-      isLoading: _isLoading,
-      fullWidth: true,
-      onPressed: _handleLogin,
-    );
-  }
-
-  Widget _buildVersionFooter() {
-    return Center(
-      child: Text(
-        'v2.0.0-rc1 • Reparto Manager V2',
-        style: AppTypography.caption(AppColors.textMuted),
       ),
     );
   }
