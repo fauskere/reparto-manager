@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../tokens/app_colors.dart';
 import '../../tokens/app_spacing.dart';
 import '../../tokens/app_typography.dart';
 import '../app_card.dart';
-import '../balance_badge.dart';
 
 /// Tarjeta estructurada de cliente para grillas (modo 2 columnas).
-/// Presenta los datos y acciones en un formato de tarjeta visual.
+/// Presenta los datos y acciones en un formato de tarjeta visual con los colores del tema.
 class ClientCardItem extends StatelessWidget {
   final String name;
   final String? nickname;
@@ -21,6 +21,7 @@ class ClientCardItem extends StatelessWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onTogglePassed;
   final VoidCallback? onUndoPassed;
+  final VoidCallback? onToggleSchedule;
 
   const ClientCardItem({
     super.key,
@@ -37,6 +38,7 @@ class ClientCardItem extends StatelessWidget {
     this.onDelete,
     this.onTogglePassed,
     this.onUndoPassed,
+    this.onToggleSchedule,
   });
 
   @override
@@ -63,7 +65,7 @@ class ClientCardItem extends StatelessWidget {
               _buildHeader(),
               const SizedBox(height: AppSpacing.sm),
               _buildAddressInfo(),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sm),
               const Divider(height: 1),
               const SizedBox(height: AppSpacing.xs),
               _buildFooterActions(),
@@ -109,50 +111,53 @@ class ClientCardItem extends StatelessWidget {
             ],
           ),
         ),
-        BalanceBadge(balance: balance, size: BalanceBadgeSize.small),
+        _buildSimpleBalanceBadge(balance),
       ],
     );
   }
 
   Widget _buildAvatar() {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        CircleAvatar(
-          radius: 18,
-          backgroundColor: isVisited
-              ? AppColors.success.withValues(alpha: 0.2)
-              : AppColors.primaryYellow.withValues(alpha: 0.15),
-          child: Icon(
-            isVisited ? Icons.check_circle_rounded : Icons.person_rounded,
-            color: isVisited ? AppColors.success : AppColors.primaryYellow,
-            size: 20,
+    return InkWell(
+      onTap: onToggleSchedule,
+      borderRadius: BorderRadius.circular(18),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: isVisited
+                ? AppColors.success.withValues(alpha: 0.2)
+                : AppColors.primaryYellow.withValues(alpha: 0.15),
+            child: Icon(
+              isVisited ? Icons.check_circle_rounded : Icons.person_rounded,
+              color: isVisited ? AppColors.success : AppColors.primaryYellow,
+              size: 20,
+            ),
           ),
-        ),
-        Positioned(
-          bottom: -2,
-          right: -2,
-          child: _buildScheduleBadge(),
-        ),
-      ],
+          Positioned(
+            bottom: -2,
+            right: -2,
+            child: _buildScheduleBadge(),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildScheduleBadge() {
     final bool isContinuous = isContinuousSchedule;
-    final color = isContinuous ? AppColors.success : AppColors.warning;
 
     return Container(
-      padding: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.all(2.5),
       decoration: BoxDecoration(
-        color: isContinuous ? color : AppColors.surfaceDark,
+        color: AppColors.surfaceDark,
         shape: BoxShape.circle,
-        border: Border.all(color: color, width: 1.5),
+        border: Border.all(color: AppColors.primaryYellow, width: 1.5),
       ),
       child: Icon(
-        isContinuous ? Icons.wb_sunny_rounded : Icons.access_time_rounded,
-        size: 8.0,
-        color: isContinuous ? Colors.black : color,
+        isContinuous ? Icons.storefront_rounded : Icons.access_time_rounded,
+        size: 9.0,
+        color: AppColors.primaryYellow,
       ),
     );
   }
@@ -164,7 +169,7 @@ class ClientCardItem extends StatelessWidget {
         const SizedBox(width: AppSpacing.xs),
         Expanded(
           child: Text(
-            address ?? 'Sin dirección especificada',
+            address ?? 'Sin dirección',
             style: AppTypography.bodySmall.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -182,18 +187,18 @@ class ClientCardItem extends StatelessWidget {
 
   Widget _buildNoonClosingChip() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.15),
+        color: AppColors.primaryYellow.withValues(alpha: 0.15),
         borderRadius: AppSpacing.borderRadiusSm,
-        border: Border.all(color: AppColors.warning.withValues(alpha: 0.4)),
+        border: Border.all(color: AppColors.primaryYellow.withValues(alpha: 0.4)),
       ),
       child: Text(
         'Cierra mediodía',
         style: TextStyle(
           fontSize: 10.5,
           fontWeight: FontWeight.w700,
-          color: AppColors.warning,
+          color: AppColors.primaryYellow,
         ),
       ),
     );
@@ -208,7 +213,7 @@ class ClientCardItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: Icon(Icons.edit_outlined, size: 18, color: AppColors.textSecondary),
+              icon: Icon(Icons.edit_outlined, size: 18, color: AppColors.primaryYellow),
               tooltip: 'Editar datos',
               visualDensity: VisualDensity.compact,
               onPressed: onEdit,
@@ -232,16 +237,49 @@ class ClientCardItem extends StatelessWidget {
   Widget _buildPassButton() {
     if (isPassed) {
       return TextButton.icon(
-        icon: Icon(Icons.undo_rounded, size: 14, color: AppColors.info),
-        label: Text('Deshacer', style: TextStyle(color: AppColors.info, fontSize: 12)),
+        icon: Icon(Icons.undo_rounded, size: 15, color: AppColors.primaryYellow),
+        label: Text('Deshacer', style: TextStyle(color: AppColors.primaryYellow, fontSize: 12)),
         onPressed: onUndoPassed,
       );
     }
 
     return TextButton.icon(
-      icon: Icon(Icons.close_rounded, size: 14, color: AppColors.textMuted),
-      label: Text('Pasar', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+      icon: Icon(Icons.close_rounded, size: 15, color: AppColors.primaryYellow),
+      label: Text('Pasar', style: TextStyle(color: AppColors.primaryYellow, fontSize: 12)),
       onPressed: onTogglePassed,
+    );
+  }
+
+  Widget _buildSimpleBalanceBadge(double amount) {
+    final currencyFormat = NumberFormat('#,##0', 'es_AR');
+    final bool hasDebt = amount > 0;
+    final bool hasCredit = amount < 0;
+
+    final Color color = hasDebt
+        ? AppColors.danger
+        : hasCredit
+            ? AppColors.success
+            : AppColors.textSecondary;
+
+    final String formattedNumber = currencyFormat.format(amount.abs());
+    final String text = hasCredit ? '-$formattedNumber\$' : '$formattedNumber\$';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: AppSpacing.borderRadiusSm,
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.0),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12.5,
+          fontWeight: FontWeight.w900,
+          color: color,
+          letterSpacing: 0.3,
+        ),
+      ),
     );
   }
 }

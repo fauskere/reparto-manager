@@ -14,11 +14,12 @@ void main() {
   }
 
   group('Atomic Clients Widgets Tests', () {
-    testWidgets('1. ClientListItem renderiza nombre, apodo, zona, dirección y saldo', (tester) async {
+    testWidgets('1. ClientListItem renderiza nombre, apodo, zona, dirección y saldo exacto con \$ al final', (tester) async {
       bool tapped = false;
       bool edited = false;
       bool deleted = false;
       bool passed = false;
+      bool scheduleToggled = false;
 
       await tester.pumpWidget(
         wrapWithMaterial(
@@ -35,6 +36,7 @@ void main() {
             onEdit: () => edited = true,
             onDelete: () => deleted = true,
             onTogglePassed: () => passed = true,
+            onToggleSchedule: () => scheduleToggled = true,
           ),
         ),
       );
@@ -42,8 +44,8 @@ void main() {
       expect(find.text('Carlos Gómez (El Pela)'), findsOneWidget);
       expect(find.text('Centro'), findsOneWidget);
       expect(find.text('San Martín 1420'), findsOneWidget);
-      expect(find.textContaining('24.500'), findsOneWidget);
-      expect(find.byIcon(Icons.wb_sunny_rounded), findsOneWidget);
+      expect(find.text('24.500\$'), findsOneWidget);
+      expect(find.byIcon(Icons.storefront_rounded), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.close_rounded));
       expect(passed, isTrue);
@@ -54,11 +56,14 @@ void main() {
       await tester.tap(find.byIcon(Icons.delete_outline_rounded));
       expect(deleted, isTrue);
 
+      await tester.tap(find.byIcon(Icons.storefront_rounded));
+      expect(scheduleToggled, isTrue);
+
       await tester.tap(find.text('Carlos Gómez (El Pela)'));
       expect(tapped, isTrue);
     });
 
-    testWidgets('2. ClientListItem en estado pasado muestra botón deshacer', (tester) async {
+    testWidgets('2. ClientListItem en estado pasado muestra botón deshacer y badge horario', (tester) async {
       bool undoPassed = false;
 
       await tester.pumpWidget(
@@ -75,13 +80,14 @@ void main() {
 
       expect(find.text('• PASADO'), findsOneWidget);
       expect(find.text('Cierra mediodía'), findsOneWidget);
+      expect(find.byIcon(Icons.access_time_rounded), findsOneWidget);
       expect(find.byIcon(Icons.undo_rounded), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.undo_rounded));
       expect(undoPassed, isTrue);
     });
 
-    testWidgets('3. ClientCardItem renderiza correctamente en modo tarjeta', (tester) async {
+    testWidgets('3. ClientCardItem renderiza saldo a favor con signo negativo al inicio', (tester) async {
       await tester.pumpWidget(
         wrapWithMaterial(
           ClientCardItem(
@@ -100,7 +106,7 @@ void main() {
       expect(find.text('Sur'), findsOneWidget);
       expect(find.text('Belgrano 340'), findsOneWidget);
       expect(find.text('Cierra mediodía'), findsOneWidget);
-      expect(find.textContaining('5.000'), findsOneWidget);
+      expect(find.text('-5.000\$'), findsOneWidget);
     });
 
     testWidgets('4. ClientsBottomBar muestra total adeudado y botón de agregar', (tester) async {

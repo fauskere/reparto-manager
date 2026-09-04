@@ -170,6 +170,7 @@ class _ShowroomClientsTabState extends State<ShowroomClientsTab> {
           onDelete: () => AppSnackBar.showWarning(context, 'Eliminar: ${client.name}'),
           onTogglePassed: () => setState(() => client.isPassed = true),
           onUndoPassed: () => setState(() => client.isPassed = false),
+          onToggleSchedule: () => setState(() => client.isContinuousSchedule = !client.isContinuousSchedule),
         );
       },
     );
@@ -201,6 +202,7 @@ class _ShowroomClientsTabState extends State<ShowroomClientsTab> {
           onDelete: () => AppSnackBar.showWarning(context, 'Eliminar: ${client.name}'),
           onTogglePassed: () => setState(() => client.isPassed = true),
           onUndoPassed: () => setState(() => client.isPassed = false),
+          onToggleSchedule: () => setState(() => client.isContinuousSchedule = !client.isContinuousSchedule),
         );
       },
     );
@@ -214,7 +216,7 @@ class _MockClientData {
   final String? address;
   final String? zone;
   final double balance;
-  final bool isContinuousSchedule;
+  bool isContinuousSchedule;
   bool isVisited;
   bool isPassed;
 

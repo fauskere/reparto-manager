@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../tokens/app_colors.dart';
 import '../../tokens/app_spacing.dart';
 import '../../tokens/app_typography.dart';
 import '../app_card.dart';
-import '../balance_badge.dart';
 
 /// Ítem compacto de cliente para visualización en lista vertical.
-/// Recibe datos puros y callbacks de acción.
+/// Recibe datos puros y callbacks de acción según el tema activo.
 class ClientListItem extends StatelessWidget {
   final String name;
   final String? nickname;
@@ -21,6 +21,7 @@ class ClientListItem extends StatelessWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onTogglePassed;
   final VoidCallback? onUndoPassed;
+  final VoidCallback? onToggleSchedule;
 
   const ClientListItem({
     super.key,
@@ -37,6 +38,7 @@ class ClientListItem extends StatelessWidget {
     this.onDelete,
     this.onTogglePassed,
     this.onUndoPassed,
+    this.onToggleSchedule,
   });
 
   @override
@@ -74,44 +76,47 @@ class ClientListItem extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: isVisited
-              ? AppColors.success.withValues(alpha: 0.2)
-              : AppColors.primaryYellow.withValues(alpha: 0.15),
-          child: Icon(
-            isVisited ? Icons.check_circle_rounded : Icons.person_rounded,
-            color: isVisited ? AppColors.success : AppColors.primaryYellow,
-            size: 22,
+    return InkWell(
+      onTap: onToggleSchedule,
+      borderRadius: BorderRadius.circular(20),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: isVisited
+                ? AppColors.success.withValues(alpha: 0.2)
+                : AppColors.primaryYellow.withValues(alpha: 0.15),
+            child: Icon(
+              isVisited ? Icons.check_circle_rounded : Icons.person_rounded,
+              color: isVisited ? AppColors.success : AppColors.primaryYellow,
+              size: 22,
+            ),
           ),
-        ),
-        Positioned(
-          bottom: -2,
-          right: -2,
-          child: _buildScheduleBadge(),
-        ),
-      ],
+          Positioned(
+            bottom: -2,
+            right: -2,
+            child: _buildScheduleBadge(),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildScheduleBadge() {
     final bool isContinuous = isContinuousSchedule;
-    final color = isContinuous ? AppColors.success : AppColors.warning;
 
     return Container(
-      padding: const EdgeInsets.all(2.5),
+      padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(
-        color: isContinuous ? color : AppColors.surfaceDark,
+        color: AppColors.surfaceDark,
         shape: BoxShape.circle,
-        border: Border.all(color: color, width: 1.5),
+        border: Border.all(color: AppColors.primaryYellow, width: 1.5),
       ),
       child: Icon(
-        isContinuous ? Icons.wb_sunny_rounded : Icons.access_time_rounded,
-        size: 9.0,
-        color: isContinuous ? Colors.black : color,
+        isContinuous ? Icons.storefront_rounded : Icons.access_time_rounded,
+        size: 10.0,
+        color: AppColors.primaryYellow,
       ),
     );
   }
@@ -157,7 +162,7 @@ class ClientListItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11.0,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.warning,
+                  color: AppColors.primaryYellow,
                   letterSpacing: 0.3,
                 ),
               ),
@@ -181,7 +186,7 @@ class ClientListItem extends StatelessWidget {
               ),
             ],
             if (address != null && address!.isNotEmpty) ...[
-              Expanded(
+              Flexible(
                 child: Text(
                   address!,
                   style: AppTypography.bodySmall.copyWith(
@@ -204,18 +209,18 @@ class ClientListItem extends StatelessWidget {
 
   Widget _buildNoonClosingBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.15),
+        color: AppColors.primaryYellow.withValues(alpha: 0.15),
         borderRadius: AppSpacing.borderRadiusSm,
-        border: Border.all(color: AppColors.warning.withValues(alpha: 0.4)),
+        border: Border.all(color: AppColors.primaryYellow.withValues(alpha: 0.4)),
       ),
       child: Text(
         'Cierra mediodía',
         style: TextStyle(
           fontSize: 11.0,
           fontWeight: FontWeight.w700,
-          color: AppColors.warning,
+          color: AppColors.primaryYellow,
           letterSpacing: 0.2,
         ),
       ),
@@ -228,33 +233,63 @@ class ClientListItem extends StatelessWidget {
       children: [
         _buildPassButton(),
         const SizedBox(width: AppSpacing.xs),
-        BalanceBadge(
-          balance: balance,
-          size: BalanceBadgeSize.small,
-        ),
+        _buildSimpleBalanceBadge(balance),
         const SizedBox(width: AppSpacing.xs),
         IconButton(
-          icon: Icon(Icons.edit_outlined, size: 18, color: AppColors.textSecondary),
+          icon: Icon(Icons.edit_outlined, size: 19, color: AppColors.primaryYellow),
           tooltip: 'Editar datos',
           visualDensity: VisualDensity.compact,
           onPressed: onEdit,
         ),
         IconButton(
-          icon: Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.danger),
+          icon: Icon(Icons.delete_outline_rounded, size: 19, color: AppColors.danger),
           tooltip: 'Eliminar cliente',
           visualDensity: VisualDensity.compact,
           onPressed: onDelete,
         ),
         if (onTap != null)
-          Icon(Icons.chevron_right_rounded, size: 20, color: AppColors.textMuted),
+          Icon(Icons.chevron_right_rounded, size: 22, color: AppColors.primaryYellow),
       ],
+    );
+  }
+
+  Widget _buildSimpleBalanceBadge(double amount) {
+    final currencyFormat = NumberFormat('#,##0', 'es_AR');
+    final bool hasDebt = amount > 0;
+    final bool hasCredit = amount < 0;
+
+    final Color color = hasDebt
+        ? AppColors.danger
+        : hasCredit
+            ? AppColors.success
+            : AppColors.textSecondary;
+
+    final String formattedNumber = currencyFormat.format(amount.abs());
+    final String text = hasCredit ? '-$formattedNumber\$' : '$formattedNumber\$';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: AppSpacing.borderRadiusSm,
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.0),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 13.5,
+          fontWeight: FontWeight.w900,
+          color: color,
+          letterSpacing: 0.3,
+        ),
+      ),
     );
   }
 
   Widget _buildPassButton() {
     if (isPassed) {
       return IconButton(
-        icon: Icon(Icons.undo_rounded, size: 18, color: AppColors.info),
+        icon: Icon(Icons.undo_rounded, size: 19, color: AppColors.primaryYellow),
         tooltip: 'Deshacer pase',
         visualDensity: VisualDensity.compact,
         onPressed: onUndoPassed,
@@ -262,7 +297,7 @@ class ClientListItem extends StatelessWidget {
     }
 
     return IconButton(
-      icon: Icon(Icons.close_rounded, size: 18, color: AppColors.textMuted),
+      icon: Icon(Icons.close_rounded, size: 19, color: AppColors.primaryYellow),
       tooltip: 'Pasar cliente',
       visualDensity: VisualDensity.compact,
       onPressed: onTogglePassed,
